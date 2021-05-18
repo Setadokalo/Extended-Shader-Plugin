@@ -1,9 +1,19 @@
 tool
 extends Shader
 
+signal error(line, error_msg)
+
 export var defines := {} setget set_defines
 
 var raw_code := "" setget set_code, get_raw_code
+
+func _init():
+	if not self.is_connected("error", self, "_on_error"):
+		if connect("error", self, "_on_error"):
+			printerr("failed to connect own signal!")
+	
+func _on_error(line, error):
+	printerr(":", line, " - Extended Shader Preprocessor: ", error)
 
 func set_defines(value : Dictionary) -> void:
 	if value:
@@ -19,22 +29,54 @@ func set_code(value : String) -> void:
 func get_raw_code() -> String:
 	return raw_code
 
-func update_code():
-	var new_code = expand_includes(raw_code)
-	new_code = remove_comments(new_code)
-	.set_code(process_directives(new_code))
+func update_code() -> void:
+	var result = expand_includes(raw_code)
+	result = process_directives(result)
+	
+	#trim unneeded trailing newlines
+	result.strip_edges()
+	result += "\n"
+	# disabled because it's unnecessary and makes the raw view less pleasant
+	# result = remove_comments(result)
+	.set_code(result)
+	
+func get_include_in_line(line: int) -> Dictionary:
+	var lines : PoolStringArray = raw_code.split("\n")
+	var result = Dictionary()
+	var path := get_include_for_line(lines[line])
+	if path != "":
+		if not path.get_extension():
+			path = path + ".extshader"
+		#if path
+		var start_idx = (lines[line] as String).find("include")
+		if not start_idx:
+			return result
+		result["path"] = path
+		result["start_idx"] = start_idx
+		result["end_idx"] = start_idx + "include".length()
+	return result
 
-func expand_includes(string : String) -> String:
-	var include := create_reg_exp("[ ]*#[ ]*include[ ]+\"(?<filepath>[ \\d\\w\\-:/.\\(\\)]+)\"")
+var base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]")
+var include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+\"(?<filepath>[ \\d\\w\\-:/.\\(\\)]+)\"")
+
+func get_include_for_line(line: String) -> String:
+	var Match := include.search(line)
+	if Match:
+		var path := Match.get_string("filepath")
+		return path
+	return ""
+
+func expand_includes(string : String, override_line_num: int = -1) -> String:
 	
 	var lines : PoolStringArray = string.split("\n")
 	var line_num := 0
 	while line_num < lines.size():
 		var line := lines[line_num]
-		
 		var Match := include.search(line)
 		if Match:
 			var path := Match.get_string("filepath")
+			if not path.get_extension():
+				path = path + ".extshader"
 			lines.remove(line_num)
 			if ResourceLoader.exists(path):
 				var resource := load(path)
@@ -44,33 +86,43 @@ func expand_includes(string : String) -> String:
 				if resource is Shader:
 					sub_code = resource.code
 				else:
-					printerr("You can only include shader files.")
+					emit_signal("error", 
+						line_num + 1 if override_line_num == -1 else override_line_num, 
+						"You can only include shader files.")
 				
-				sub_code = expand_includes(sub_code).trim_suffix("\n")
+				sub_code = expand_includes(sub_code, line_num + 1).trim_suffix("\n")
+				lines.insert(line_num, "/**** END OF INCLUDE FROM  \"" + path + "\" ****/")
 				lines.insert(line_num, sub_code)
+				lines.insert(line_num, "/**** INCLUDED FROM  \"" + path + "\" ****/")
 				line_num += 1
+			else:
+				emit_signal("error", 
+					line_num + 1 if override_line_num == -1 else override_line_num, 
+					"Invalid include path")
 			continue
-		
+		elif base_include.search(line):
+			emit_signal("error", 
+				line_num + 1 if override_line_num == -1 else override_line_num, 
+				"Invalid include statement")
 		line_num += 1
 	
 	string = ""
 	for line in lines:
 		string += line + "\n"
-	
-	return string
+	return string.strip_edges()
 
 func remove_comments(string : String) -> String:
 	var comment := create_reg_exp("(//[^\\n]*\\n?)|(/\\*[\\S\\s]*\\*/)")
 	return comment.sub(string, "", true)
 
-func process_directives(string : String) -> String:
-	var define_mac := create_reg_exp("[ ]*#[ ]*define[ ]+(?<name>\\w[\\d\\w]*)[ ]*(?<value>[^\\\\]+)?")
-	var define_func := create_reg_exp("\\(([ ]*[\\w]+[ ]*,*[ ]*)+\\)")
-	var undefine := create_reg_exp("[ ]*#[ ]*undef[ ]+(?<name>\\w[\\d\\w]*)")
+func process_directives(string : String, override_line_num: int = -1) -> String:
+	var define_mac := create_reg_exp("^[\t ]*#[\t ]*define[\t ]+(?<name>\\w[\\d\\w]*)[\t ]*(?<value>[^\\\\]+)?")
+	var define_func := create_reg_exp("\\(([\t ]*[\\w]+[\t ]*,*[\t ]*)+\\)")
+	var undefine := create_reg_exp("^[\t ]*#[\t ]*undef[\t ]+(?<name>\\w[\\d\\w]*)")
 	
-	var ifdef := create_reg_exp("[ ]*#[ ]*if(?<define>(?<negated>n)?def)?[ ]+(?<expression>[^\\\\]+)")
-	var elifd := create_reg_exp("[ ]*#[ ]*elif[ ]+(?<condition>[^\\\\]+)")
-	var else_endif := create_reg_exp("[ ]*#[ ]*((?<else>else)|(endif))")
+	var ifdef := create_reg_exp("^[\t ]*#[\t ]*if(?<define>(?<negated>n)?def)?[\t ]+(?<expression>[^\\\\]+)")
+	var elifd := create_reg_exp("^[\t ]*#[\t ]*elif[\t ]+(?<condition>[^\\\\]+)")
+	var else_endif := create_reg_exp("^[\t ]*#[\t ]*((?<else>else)|(endif))")
 	
 	var defines := self.defines.duplicate()
 	var if_stack := []
@@ -133,7 +185,7 @@ func process_directives(string : String) -> String:
 		if Match:
 			var stack = if_stack.pop_front()
 			if not stack:
-				printerr("Uneven amount of ifs and endifs!")
+				emit_signal("error", line_num + 1, "Uneven amount of ifs and endifs!")
 				break
 			
 			lines.remove(line_num)
@@ -153,7 +205,7 @@ func process_directives(string : String) -> String:
 		if Match:
 			var stack = if_stack.pop_front()
 			if not stack:
-				printerr("Uneven amount of ifs and endifs!")
+				emit_signal("error", line_num, "Uneven amount of ifs and endifs!")
 				break
 			
 			lines.remove(line_num)
@@ -179,8 +231,7 @@ func process_directives(string : String) -> String:
 	string = ""
 	for line in lines:
 		string += line + "\n"
-	
-	return string
+	return string.strip_edges()
 
 func replace_defines(line : String, defines : Dictionary) -> String:
 	for define in defines:
@@ -232,7 +283,7 @@ func evaluate_condition(condition : String, defines : Dictionary) -> bool:
 	var expression := Expression.new()
 	var error := expression.parse(condition)
 	if error:
-		printerr("A condition failed to be parsed: " + condition + " : " + str(error))
+		emit_signal("error", -1, "A condition failed to be parsed: " + condition + " : " + str(error))
 		return false
 	
 	var boolean : bool = expression.execute()

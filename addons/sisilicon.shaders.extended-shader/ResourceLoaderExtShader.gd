@@ -21,13 +21,16 @@ func handles_type(typename : String) -> bool:
 	return typename == "Shader"
 
 func load(path : String, original_path : String):
-	var file = File.new()
+	var file := File.new()
 	file.open(path, File.READ)
 	if file.get_error():
 		return file.get_error()
-	
-	var code : String = file.get_as_text()
-	var defines : Dictionary = file.get_var()
+	if file.eof_reached():
+		return ERR_FILE_CORRUPT
+	var code : String = file.get_var() as String
+	if file.eof_reached():
+		return ERR_FILE_CORRUPT
+	var defines : Dictionary = file.get_var() as Dictionary
 	file.close()
 	
 	if code:

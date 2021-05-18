@@ -1,57 +1,38 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Test.gd" type="Script" id=1]
-[ext_resource path="res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg" type="Texture" id=2]
-[ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtendedShader.gd" type="Script" id=3]
+[ext_resource path="res://new_shader.extshader" type="Shader" id=2]
 [ext_resource path="res://icon.png" type="Texture" id=4]
 
-[sub_resource type="Shader" id=2]
-code = "shader_type canvas_item;
-
-
-vec2 rotate(vec2 v, float r) {
-	float s = sin(r);
-	float c = cos(r);
-	mat2 m = mat2(vec2(c, -s), vec2(s, c));
-	return m * v;
-}
-
-
-
-
-uniform float rotation;
-uniform vec2 translation;
-
-void fragment() {
-	vec2 uv = UV - translation;
-	uv = rotate(uv + translation - 0.5, rotation) - translation + 0.5;
-	
-	COLOR = texture(TEXTURE, mod(uv, 1.0));
-}
-
-"
-script = ExtResource( 3 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-defines = {
-"REPEAT_TEX": null
-}
-
-[sub_resource type="ShaderMaterial" id=3]
-shader = SubResource( 2 )
-shader_param/rotation = -1.1
-shader_param/translation = Vector2( 1.31, 0.57 )
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 2 )
 
 [node name="Control" type="HBoxContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="TextEdit" type="TextEdit" parent="."]
 margin_right = 510.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
+text = "#include \"canvasitem_header.extshader\"
+
+#define PURPLE
+
+#define PURPLCOL vec3(1.0, 0.2, 1.0)
+
+uniform vec3 pos;
+
+void fragment() { 
+	COLOR = texture(TEXTURE, UV);
+#ifdef PURPLE
+	COLOR.rgb = COLOR.rgb * PURPLCOL;
+#endif
+}"
 syntax_highlighting = true
 show_line_numbers = true
 
@@ -60,11 +41,27 @@ margin_left = 514.0
 margin_right = 1024.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
+text = "/**** INCLUDED FROM  \"canvasitem_header.extshader\" ****/
+shader_type canvas_item;
+
+
+/**** END OF INCLUDE FROM  \"canvasitem_header.extshader\" ****/
+
+
+
+uniform vec3 pos;
+
+void fragment() { 
+	COLOR = texture(TEXTURE, UV);
+	COLOR.rgb = COLOR.rgb * vec3(1.0, 0.2, 1.0);
+}
+
+"
 readonly = true
 show_line_numbers = true
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 3 )
+material = SubResource( 1 )
 position = Vector2( 511.502, 508.139 )
 scale = Vector2( 2.70382, 2.70382 )
 texture = ExtResource( 4 )
@@ -72,5 +69,6 @@ texture = ExtResource( 4 )
 [node name="Timer" type="Timer" parent="."]
 wait_time = 2.0
 one_shot = true
+
 [connection signal="text_changed" from="TextEdit" to="." method="_on_TextEdit_text_changed"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

@@ -28,11 +28,15 @@ _global_script_class_icons={
 
 config/name="Extended Shader"
 run/main_scene="res://Test.tscn"
-config/icon="res://icon.png"
+config/icon="res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg"
 
 [editor_plugins]
 
-enabled=PoolStringArray( "sisilicon.shaders.extended-shader" )
+enabled=PoolStringArray( "res://addons/sisilicon.shaders.extended-shader/plugin.cfg", "res://addons/zylann.editor_debugger/plugin.cfg" )
+
+[physics]
+
+common/enable_pause_aware_picking=true
 
 [rendering]
 
