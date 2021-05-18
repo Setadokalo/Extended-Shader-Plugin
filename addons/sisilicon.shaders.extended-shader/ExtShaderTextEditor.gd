@@ -169,6 +169,8 @@ const particles_keys = [
 var preproc_col = Color(0.631373, 1, 0.878431)
 var keyword_col = Color(1, 0.439216, 0.521569)
 var comment_col = Color(0.8, 0.807843, 0.827451, 0.501961)
+var include_col = Color(1.0, 1.0, 0.7)
+var builtin_include_col = Color("ffc996")
 
 var cur_hl_mode = -1
 
@@ -184,7 +186,8 @@ func reset_highlight_colors():
 		add_keyword_color(keyword, keyword_col)
 	add_color_region("/*", "*/",  comment_col)
 	add_color_region("//", "",    comment_col)
-	add_color_region("\"", "\"",    Color(1.0, 1.0, 0.7))
+	add_color_region("\"", "\"",  include_col)
+	add_color_region("<\"", ">",  builtin_include_col)
 	add_color_region("/!!!!", "!!!!/", Color(1.0, 0.3, 0.3))
 	add_keyword_color("define", preproc_col)
 	add_keyword_color("undef", preproc_col)

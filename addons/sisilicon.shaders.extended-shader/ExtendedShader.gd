@@ -31,6 +31,7 @@ func get_raw_code() -> String:
 
 func update_code() -> void:
 	var result = expand_includes(raw_code)
+	print("parsed include statements recursively, produced: \n", result)
 	result = process_directives(result)
 	
 	#trim unneeded trailing newlines
@@ -58,12 +59,18 @@ func get_include_in_line(line: int) -> Dictionary:
 
 var base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]")
 var include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+\"(?<filepath>[ \\d\\w\\-:/.\\(\\)]+)\"")
+var builtin_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+<\"(?<filepath>[ \\d\\w\\-:/.\\(\\)]+)\">")
 
 func get_include_for_line(line: String) -> String:
 	var Match := include.search(line)
 	if Match:
 		var path := Match.get_string("filepath")
 		return path
+	else:
+		Match = builtin_include.search(line)
+		if Match:
+			var path := Match.get_string("filepath")
+			return path
 	return ""
 
 func expand_includes(string : String, override_line_num: int = -1) -> String:
@@ -73,8 +80,15 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 	while line_num < lines.size():
 		var line := lines[line_num]
 		var Match := include.search(line)
+		var path: String
 		if Match:
-			var path := Match.get_string("filepath")
+			path = Match.get_string("filepath")
+		else:
+			Match = builtin_include.search(line)
+			if Match:
+				path = Match.get_string("filepath")
+				path = "res://addons/sisilicon.shaders.extended-shader/builtin_shaders/" + path
+		if Match:
 			if not path.get_extension():
 				path = path + ".extshader"
 			lines.remove(line_num)
@@ -84,7 +98,14 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 				var sub_code : String
 #				print(path.get_extension())
 				if resource is Shader:
-					sub_code = resource.code
+					print("Resource class is ", resource.get_script().get_class())
+					# get the raw code instead of the preprocessed code
+					# so that things like #define will work cross-file
+					# (allowing constructs like `#ifndef WAS_LOADED`)
+					if resource.has_method("get_raw_code"):
+						sub_code = resource.get_raw_code()
+					else:
+						sub_code = resource.code
 				else:
 					emit_signal("error", 
 						line_num + 1 if override_line_num == -1 else override_line_num, 
