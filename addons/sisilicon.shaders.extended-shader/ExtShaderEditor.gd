@@ -116,10 +116,13 @@ func edit(shader : ExtendedShader) -> void:
 	if raw_view:
 		$Tools/RawView.pressed = false
 	if self.shader != shader:
-		shader_timer.connect("timeout", self, "_on_PollForErrors_timeout")
+		if not shader_timer.is_connected("timeout", self, "_on_PollForErrors_timeout"):
+			shader_timer.connect("timeout", self, "_on_PollForErrors_timeout")
 		self.shader = shader
-		shader.connect("error", self, "_on_Shader_error")
-		shader.connect("error", self, "_on_Preproc_error")
+		if not shader.is_connected("error", self, "_on_Shader_error"):
+			shader.connect("error", self, "_on_Shader_error")
+		if not shader.is_connected("error", self, "_on_Preproc_error"):
+			shader.connect("error", self, "_on_Preproc_error")
 		text_edit = $TextEdit
 		
 		_on_TextEdit_cursor_changed()
