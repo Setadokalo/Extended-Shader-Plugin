@@ -10,6 +10,8 @@ enum {FIND, FIND_NEXT, FIND_PREVIOUS, REPLACE, GOTO_LINE,
 
 #enum {GOTO_LINE}
 
+var fs: EditorFileSystem
+
 const ExtendedShader = preload("ExtendedShader.gd")
 
 
@@ -102,7 +104,6 @@ func parse_settings(settings: EditorSettings):
 	text_edit.add_color_override("comment_color", settings.get_setting("text_editor/highlighting/comment_color"))
 	text_edit.draw_spaces = settings.get_setting("text_editor/indent/draw_spaces")
 	text_edit.draw_tabs = settings.get_setting("text_editor/indent/draw_tabs")
-
 func save_external_data() -> void:
 	if not shader:
 		return
@@ -112,7 +113,22 @@ func save_external_data() -> void:
 		#external shader, save it
 		ResourceSaver.save(shader.resource_path, shader)
 
+func validate_filename():
+	if shader.resource_path.ends_with(".shader"):
+		printerr("ExtendedShader ", shader.resource_path.get_basename(), " is saved as .shader! This will break on reloading the editor!")
+		print("Attempting to change file path")
+		var old_path = shader.resource_path
+		shader.resource_path = shader.resource_path.trim_suffix(".shader") + ".extshader"
+		var dir = Directory.new()
+		if dir.open(old_path.get_base_dir()):
+			printerr("error on opening dir")
+		if dir.rename(old_path, shader.resource_path):
+			printerr("error on renaming file")
+		if fs: 
+			fs.scan()
+
 func edit(shader : ExtendedShader) -> void:
+	validate_filename()
 	if raw_view:
 		$Tools/RawView.pressed = false
 	if self.shader != shader:
@@ -134,6 +150,8 @@ func edit(shader : ExtendedShader) -> void:
 			had_focus = false
 
 func apply_shaders() -> void:
+	validate_filename()
+	
 	if text_edit and shader and not raw_view:
 		$InfoBar/ErrorBar.text = ""
 		var editor_code : String = text_edit.text

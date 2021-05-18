@@ -30,6 +30,7 @@ func get_raw_code() -> String:
 	return raw_code
 
 func update_code() -> void:
+
 	var result = expand_includes(raw_code)
 	print("parsed include statements recursively, produced: \n", result)
 	result = process_directives(result)

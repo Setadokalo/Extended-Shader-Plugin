@@ -33,6 +33,7 @@ func _enter_tree():
 			shader_editor.get_child(0).error_label = shader_errlbl
 			shader_editor.get_child(0).classic_shader_editor = panel
 			shader_editor.get_child(0).shader_timer = shader_timer
+			shader_editor.get_child(0).fs = get_editor_interface().get_resource_filesystem()
 	
 	for but in button.get_parent().get_children():
 		if but.text == "Shader":
