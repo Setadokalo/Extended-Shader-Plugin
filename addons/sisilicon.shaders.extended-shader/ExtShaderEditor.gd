@@ -29,6 +29,8 @@ var shader_timer : Timer
 var classic_shader_editor: Control
 var raw_view: bool = false
 
+var singleton := preload("ExtendedShaderSingleton.gd").new()
+
 func _ready() -> void:
 	error_lbl_regex.compile("^error\\((.+?)\\): (.*)$")
 	var search : PopupMenu = $Tools/Search.get_popup()
@@ -65,6 +67,9 @@ func _ready() -> void:
 	edit.set_item_shortcut(edit.get_item_index(CLONE_DOWN), shortcut(KEY_B, true, false, false))
 
 	edit.set_item_shortcut(edit.get_item_index(COMPLETE_SYMBOL), shortcut(KEY_SPACE, true, false, false))
+	
+	yield(get_tree(), "idle_frame")
+	get_tree().root.add_child(singleton)
 	
 	edit(shader)
 
@@ -104,6 +109,7 @@ func parse_settings(settings: EditorSettings):
 	text_edit.add_color_override("comment_color", settings.get_setting("text_editor/highlighting/comment_color"))
 	text_edit.draw_spaces = settings.get_setting("text_editor/indent/draw_spaces")
 	text_edit.draw_tabs = settings.get_setting("text_editor/indent/draw_tabs")
+	
 func save_external_data() -> void:
 	if not shader:
 		return
@@ -128,6 +134,9 @@ func validate_filename():
 			fs.scan()
 
 func edit(shader : ExtendedShader) -> void:
+	if not shader:
+		return
+	shader.singleton = singleton
 	validate_filename()
 	if raw_view:
 		$Tools/RawView.pressed = false
@@ -168,7 +177,6 @@ func _on_TextEdit_cursor_changed():
 func _on_TextEdit_text_changed():
 	if not raw_view:
 		$Timer.start()
-		$CompletionTimer.start()
 
 var preproc_errored = false
 

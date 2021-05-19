@@ -7,6 +7,11 @@ export var defines := {} setget set_defines
 
 export var raw_code := "" setget set_code, get_raw_code
 
+const ExtendedShaderSingleton = preload(\
+	"res://addons/sisilicon.shaders.extended-shader/ExtendedShaderSingleton.gd")
+
+var singleton: ExtendedShaderSingleton
+
 func _init():
 	if not self.is_connected("error", self, "_on_error"):
 		if connect("error", self, "_on_error"):
@@ -21,6 +26,9 @@ func set_defines(value : Dictionary) -> void:
 	else:
 		defines = {}
 	update_code()
+
+func set_singleton(sngltn: ExtendedShaderSingleton):
+	singleton = sngltn
 
 func set_code(value : String) -> void:
 	raw_code = value
@@ -92,47 +100,8 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 				path = "res://addons/sisilicon.shaders.extended-shader/builtin_shaders/" + path
 				is_builtin = true
 		if Match:
-			if not path.get_extension():
-				path = path + ".extshader"
-			lines.remove(line_num)
-			if ResourceLoader.exists(path):
-				var resource := load(path)
-				
-				var sub_code : String
-#				print(path.get_extension())
-				if resource is Shader:
-					# get the raw code instead of the preprocessed code
-					# so that things like #define will work cross-file
-					# (allowing constructs like `#ifndef WAS_LOADED`)
-					if resource.has_method("get_raw_code"):
-						sub_code = resource.get_raw_code()
-					else:
-						sub_code = resource.code
-				else:
-					emit_signal("error", 
-						line_num + 1 if override_line_num == -1 else override_line_num, 
-						"You can only include shader files.")
-				
-				sub_code = expand_includes(sub_code, line_num + 1).trim_suffix("\n")
-				lines.insert(line_num, "/**** END OF INCLUDE FROM  \"" + path + "\" ****/")
-				lines.insert(line_num, sub_code)
-				lines.insert(line_num, "/**** INCLUDED FROM  \"" + path + "\" ****/")
-				line_num += 1
-			else:
-				if not is_builtin:
-					emit_signal("error", 
-						line_num + 1 if override_line_num == -1 else override_line_num, 
-						"Invalid include path")
-				else:	
-					var bltns = get_builtin_shaders()
-					var err_str = "Invalid built-in include path - available built ins are "
-					for file in range(bltns.size() - 1):
-						err_str = err_str + bltns[file] + ", "
-					err_str = err_str + "and " + bltns[bltns.size() - 1]
-					emit_signal("error", 
-					line_num + 1 if override_line_num == -1 else override_line_num, 
-					"Invalid include path")
-				
+			lines = _process_match(lines, line_num, override_line_num, 
+				Match, path, is_builtin)
 			continue
 		elif builtin_base_include.search(line):
 			var bltns = get_builtin_shaders()
@@ -155,6 +124,79 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 	return string.strip_edges()
 
 var builtins: Array
+
+func _process_match(lines: Array, line_num: int, override_line_num: int,
+		 Match: RegExMatch, path: String, is_builtin: bool) -> Array:
+	if not path.get_extension():
+		path = path + ".extshader"
+	# TODO: allow local paths
+	if not path.begins_with("res://"):
+		path = "res://" + path
+	lines.remove(line_num)
+	var found_include = false
+	if singleton:
+		var cache_result = singleton.get_compiled_shader(
+			ExtendedShaderSingleton.def_cache_access(path, defines)
+		)
+		if cache_result:
+			defines = cache_result.mutated_defines
+			lines.insert(line_num, "/**** END OF INCLUDE FROM  \"" + path + "\" ****/")
+			lines.insert(line_num, cache_result.compiled_code)
+			lines.insert(line_num, "/**** INCLUDED FROM  \"" + path + "\" ****/")
+			line_num += 1
+			found_include = true
+		else:
+			cache_result = singleton.get_raw_shader(path)
+			if cache_result != "":
+				lines.insert(line_num, "/**** END OF INCLUDE FROM  \"" + path + "\" ****/")
+				lines.insert(line_num, cache_result)
+				lines.insert(line_num, "/**** INCLUDED FROM  \"" + path + "\" ****/")
+				line_num += 1
+				found_include = true
+	if not found_include:
+		if ResourceLoader.exists(path):
+			var resource := load(path)
+			
+			var sub_code : String
+	#				print(path.get_extension())
+			if resource is Shader:
+				# get the raw code instead of the preprocessed code
+				# so that things like #define will work cross-file
+				# (allowing constructs like `#ifndef WAS_LOADED`)
+				if resource.has_method("get_raw_code"):
+					sub_code = resource.get_raw_code()
+				else:
+					sub_code = resource.code
+			else:
+				emit_signal("error", 
+					line_num + 1 if override_line_num == -1 else override_line_num, 
+					"You can only include shader files.")
+			
+			sub_code = expand_includes(sub_code, line_num + 1).trim_suffix("\n")
+			if singleton:
+				print("inserting into singleton")
+				singleton.put_raw_shader(
+					path, sub_code)
+			lines.insert(line_num, "/**** END OF INCLUDE FROM  \"" + path + "\" ****/")
+			lines.insert(line_num, sub_code)
+			lines.insert(line_num, "/**** INCLUDED FROM  \"" + path + "\" ****/")
+			line_num += 1
+		else:
+			if not is_builtin:
+				emit_signal("error", 
+					line_num + 1 if override_line_num == -1 else override_line_num, 
+					"Invalid include path")
+			else:	
+				var bltns = get_builtin_shaders()
+				var err_str = "Invalid built-in include path - available built ins are "
+				for file in range(bltns.size() - 1):
+					err_str = err_str + bltns[file] + ", "
+				err_str = err_str + "and " + bltns[bltns.size() - 1]
+				emit_signal("error", 
+				line_num + 1 if override_line_num == -1 else override_line_num, 
+				err_str)
+	return lines
+
 
 func get_builtin_shaders() -> Array:
 	if builtins:
@@ -291,6 +333,8 @@ func process_directives(string : String, override_line_num: int = -1) -> String:
 	string = ""
 	for line in lines:
 		string += line + "\n"
+	if not if_stack.empty():
+		emit_signal("error", -1, "Uneven amount of ifs and endifs!")
 	return string.strip_edges()
 
 func replace_defines(line : String, defines : Dictionary) -> String:
