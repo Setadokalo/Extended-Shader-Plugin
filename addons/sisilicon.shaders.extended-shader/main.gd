@@ -45,6 +45,7 @@ func _enter_tree():
 			break
 	
 	add_inspector_plugin(shader_inspector_injector)
+	add_inspector_plugin(inspector_plugin)
 
 func _exit_tree():
 	remove_custom_type("ExtendedShader")

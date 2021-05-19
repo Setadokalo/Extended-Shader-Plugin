@@ -168,6 +168,7 @@ func _on_TextEdit_cursor_changed():
 func _on_TextEdit_text_changed():
 	if not raw_view:
 		$Timer.start()
+		$CompletionTimer.start()
 
 var preproc_errored = false
 

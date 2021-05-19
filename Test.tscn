@@ -7,15 +7,24 @@
 [sub_resource type="ShaderMaterial" id=1]
 
 [sub_resource type="Shader" id=2]
-code = "shader_type canvas_item;
+code = "/**** INCLUDED FROM  \"res://addons/sisilicon.shaders.extended-shader/builtin_shaders/canvas_hedr.extshader\" ****/
+shader_type canvas_item;
+/**** END OF INCLUDE FROM  \"res://addons/sisilicon.shaders.extended-shader/builtin_shaders/canvas_hedr.extshader\" ****/
 
 void fragment() {
-	COLOR.r = 0.0;
+	COLOR = texture(TEXTURE, UV);
+	COLOR.r = 0.2;
 }
 "
 script = ExtResource( 2 )
 defines = {
 }
+raw_code = "#include <\"canvas_hedr\">
+
+void fragment() {
+	COLOR = texture(TEXTURE, UV);
+	COLOR.r = 0.2;
+}"
 
 [sub_resource type="ShaderMaterial" id=3]
 shader = SubResource( 2 )

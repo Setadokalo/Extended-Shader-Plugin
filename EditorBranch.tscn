@@ -1,0 +1,219 @@
+[gd_scene load_steps=5 format=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 16.0
+content_margin_right = 6.0
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color( 0.15, 0.1725, 0.2325, 1 )
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color( 0.125, 0.14375, 0.19375, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+bg_color = Color( 0.201, 0.22215, 0.27855, 1 )
+
+[sub_resource type="Image" id=3]
+data = {
+"data": PoolByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 224, 224, 224, 0, 224, 224, 224, 0, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 180, 224, 224, 224, 255, 224, 224, 224, 255, 223, 223, 223, 180, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 0, 224, 224, 224, 0, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 224, 224, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 168, 224, 224, 224, 255, 224, 224, 224, 255, 223, 223, 223, 168, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 214, 214, 214, 0, 214, 214, 214, 19, 223, 223, 223, 234, 223, 223, 223, 234, 214, 214, 214, 19, 214, 214, 214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 217, 217, 217, 0, 221, 221, 221, 84, 221, 221, 221, 84, 217, 217, 217, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 221, 221, 221, 0, 221, 221, 221, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
+"format": "RGBA8",
+"height": 16,
+"mipmaps": false,
+"width": 16
+}
+
+[sub_resource type="ImageTexture" id=4]
+flags = 0
+flags = 0
+image = SubResource( 3 )
+size = Vector2( 16, 16 )
+
+[node name="VBoxContainer" type="VBoxContainer"]
+margin_top = 30.0
+margin_right = 705.0
+margin_bottom = 34.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+visible = false
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+size_flags_horizontal = 3
+text = "Page: "
+
+[node name="EditorSpinSlider" type="EditorSpinSlider" parent="HBoxContainer"]
+size_flags_horizontal = 3
+max_value = 1.0
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/EditorSpinSlider"]
+visible = false
+mouse_filter = 0
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/EditorSpinSlider"]
+visible = false
+custom_styles/normal = SubResource( 1 )
+caret_blink = true
+caret_blink_speed = 0.5
+
+[node name="Timer" type="Timer" parent="HBoxContainer/EditorSpinSlider/LineEdit"]
+wait_time = 0.5
+
+[node name="PopupMenu" type="PopupMenu" parent="HBoxContainer/EditorSpinSlider/LineEdit"]
+items = [ "Cut", null, 0, false, false, 0, 268435544, null, "", false, "Copy", null, 0, false, false, 1, 268435523, null, "", false, "Paste", null, 0, false, false, 2, 268435542, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Select All", null, 0, false, false, 4, 268435521, null, "", false, "Clear", null, 0, false, false, 3, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Undo", null, 0, false, false, 5, 268435546, null, "", false, "Redo", null, 0, false, false, 6, 301989978, null, "", false ]
+
+[node name="Timer" type="Timer" parent="HBoxContainer/EditorSpinSlider/LineEdit/PopupMenu"]
+wait_time = 0.3
+one_shot = true
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+margin_right = 705.0
+margin_bottom = 90.0
+custom_styles/panel = SubResource( 2 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 703.0
+margin_bottom = 88.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+margin_right = 701.0
+margin_bottom = 26.0
+
+[node name="EditorPropertyNil" type="EditorPropertyNil" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+_import_path = NodePath("")
+pause_mode = 0
+process_priority = 0
+visible = true
+modulate = Color( 1, 1, 1, 1 )
+self_modulate = Color( 1, 1, 1, 1 )
+show_behind_parent = false
+light_mask = 1
+material = null
+use_parent_material = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 669.0
+margin_bottom = 26.0
+grow_horizontal = 1
+grow_vertical = 1
+rect_min_size = Vector2( 0, 0 )
+rect_rotation = 0.0
+rect_scale = Vector2( 1, 1 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+hint_tooltip = ""
+focus_neighbour_left = NodePath("")
+focus_neighbour_top = NodePath("")
+focus_neighbour_right = NodePath("")
+focus_neighbour_bottom = NodePath("")
+focus_next = NodePath("")
+focus_previous = NodePath("")
+focus_mode = 0
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+input_pass_on_modal_close_click = true
+size_flags_horizontal = 3
+size_flags_vertical = 1
+size_flags_stretch_ratio = 1.0
+theme = null
+label = "New Key:"
+read_only = false
+checkable = false
+checked = false
+draw_red = false
+keying = false
+script = null
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer/EditorPropertyNil"]
+margin_left = 335.0
+margin_right = 669.0
+margin_bottom = 26.0
+text = "[null]"
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+margin_left = 673.0
+margin_right = 701.0
+margin_bottom = 26.0
+icon = SubResource( 4 )
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+margin_top = 30.0
+margin_right = 701.0
+margin_bottom = 56.0
+
+[node name="EditorPropertyNil" type="EditorPropertyNil" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
+_import_path = NodePath("")
+pause_mode = 0
+process_priority = 0
+visible = true
+modulate = Color( 1, 1, 1, 1 )
+self_modulate = Color( 1, 1, 1, 1 )
+show_behind_parent = false
+light_mask = 1
+material = null
+use_parent_material = false
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 669.0
+margin_bottom = 26.0
+grow_horizontal = 1
+grow_vertical = 1
+rect_min_size = Vector2( 0, 0 )
+rect_rotation = 0.0
+rect_scale = Vector2( 1, 1 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+hint_tooltip = ""
+focus_neighbour_left = NodePath("")
+focus_neighbour_top = NodePath("")
+focus_neighbour_right = NodePath("")
+focus_neighbour_bottom = NodePath("")
+focus_next = NodePath("")
+focus_previous = NodePath("")
+focus_mode = 0
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+input_pass_on_modal_close_click = true
+size_flags_horizontal = 3
+size_flags_vertical = 1
+size_flags_stretch_ratio = 1.0
+theme = null
+label = "New Value:"
+read_only = false
+checkable = false
+checked = false
+draw_red = false
+keying = false
+script = null
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer2/EditorPropertyNil"]
+margin_left = 335.0
+margin_right = 669.0
+margin_bottom = 26.0
+text = "[null]"
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer2"]
+margin_left = 673.0
+margin_right = 701.0
+margin_bottom = 26.0
+icon = SubResource( 4 )
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer"]
+margin_top = 60.0
+margin_right = 701.0
+margin_bottom = 86.0
+text = "Add Key/Value Pair"

@@ -5,7 +5,7 @@ signal error(line, error_msg)
 
 export var defines := {} setget set_defines
 
-var raw_code := "" setget set_code, get_raw_code
+export var raw_code := "" setget set_code, get_raw_code
 
 func _init():
 	if not self.is_connected("error", self, "_on_error"):
@@ -58,6 +58,7 @@ func get_include_in_line(line: int) -> Dictionary:
 	return result
 
 var base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]")
+var builtin_base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+<\"")
 var include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+\"(?<filepath>[ \\d\\w\\-:/.\\(\\)]+)\"")
 var builtin_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+<\"(?<filepath>[ \\d\\w\\-:/.\\(\\)]+)\">")
 
@@ -81,6 +82,7 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 		var line := lines[line_num]
 		var Match := include.search(line)
 		var path: String
+		var is_builtin := false
 		if Match:
 			path = Match.get_string("filepath")
 		else:
@@ -88,6 +90,7 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 			if Match:
 				path = Match.get_string("filepath")
 				path = "res://addons/sisilicon.shaders.extended-shader/builtin_shaders/" + path
+				is_builtin = true
 		if Match:
 			if not path.get_extension():
 				path = path + ".extshader"
@@ -116,10 +119,30 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 				lines.insert(line_num, "/**** INCLUDED FROM  \"" + path + "\" ****/")
 				line_num += 1
 			else:
-				emit_signal("error", 
+				if not is_builtin:
+					emit_signal("error", 
+						line_num + 1 if override_line_num == -1 else override_line_num, 
+						"Invalid include path")
+				else:	
+					var bltns = get_builtin_shaders()
+					var err_str = "Invalid built-in include path - available built ins are "
+					for file in range(bltns.size() - 1):
+						err_str = err_str + bltns[file] + ", "
+					err_str = err_str + "and " + bltns[bltns.size() - 1]
+					emit_signal("error", 
 					line_num + 1 if override_line_num == -1 else override_line_num, 
 					"Invalid include path")
+				
 			continue
+		elif builtin_base_include.search(line):
+			var bltns = get_builtin_shaders()
+			var err_str = "Invalid built-in include statement - available built ins are "
+			for file in range(bltns.size() - 1):
+				err_str = err_str + bltns[file] + ", "
+			err_str = err_str + "and " + bltns[bltns.size() - 1]
+			emit_signal("error", 
+				line_num + 1 if override_line_num == -1 else override_line_num, 
+				err_str)
 		elif base_include.search(line):
 			emit_signal("error", 
 				line_num + 1 if override_line_num == -1 else override_line_num, 
@@ -130,6 +153,23 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 	for line in lines:
 		string += line + "\n"
 	return string.strip_edges()
+
+var builtins: Array
+
+func get_builtin_shaders() -> Array:
+	if builtins:
+		return builtins
+	
+	var dir := Directory.new()
+	var ret = []
+	dir.open("res://addons/sisilicon.shaders.extended-shader/builtin_shaders")
+	dir.list_dir_begin(true, true)
+	var next : String = dir.get_next()
+	while next:
+		ret.append(next.trim_suffix(".extshader"))
+		next = dir.get_next()
+	builtins = ret
+	return ret
 
 func remove_comments(string : String) -> String:
 	var comment := create_reg_exp("(//[^\\n]*\\n?)|(/\\*[\\S\\s]*\\*/)")
@@ -310,7 +350,7 @@ func evaluate_condition(condition : String, defines : Dictionary) -> bool:
 	
 	return false if boolean == null else boolean
 
-func create_reg_exp(string : String) -> RegEx:
+static func create_reg_exp(string : String) -> RegEx:
 	var reg_exp := RegEx.new()
 	reg_exp.compile(string)
 	
