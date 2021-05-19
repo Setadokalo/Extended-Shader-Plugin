@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "EditorProperty",
+"class": "InspectorDefineEditor",
+"language": "GDScript",
+"path": "res://addons/sisilicon.shaders.extended-shader/inspector_plugin/InspectorDefineEditor.gd"
+}, {
 "base": "ResourceFormatLoader",
 "class": "ResourceLoaderExtShader",
 "language": "GDScript",
@@ -18,10 +23,17 @@ _global_script_classes=[ {
 "class": "ResourceSaverExtShader",
 "language": "GDScript",
 "path": "res://addons/sisilicon.shaders.extended-shader/ResourceSaverExtShader.gd"
+}, {
+"base": "EditorInspectorPlugin",
+"class": "ShaderInspectorInjectPlugin",
+"language": "GDScript",
+"path": "res://addons/sisilicon.shaders.extended-shader/inspector_plugin/ShaderInspectorInjectPlugin.gd"
 } ]
 _global_script_class_icons={
+"InspectorDefineEditor": "",
 "ResourceLoaderExtShader": "",
-"ResourceSaverExtShader": ""
+"ResourceSaverExtShader": "",
+"ShaderInspectorInjectPlugin": ""
 }
 
 [application]
@@ -32,7 +44,7 @@ config/icon="res://addons/sisilicon.shaders.extended-shader/icon_extended_shader
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/sisilicon.shaders.extended-shader/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/sisilicon.shaders.extended-shader/plugin.cfg", "res://addons/zylann.editor_debugger/plugin.cfg" )
 
 [physics]
 

@@ -3,6 +3,10 @@ extends EditorPlugin
 
 const ExtendedShader = preload("ExtendedShader.gd")
 
+var inspector_plugin = preload("inspector_plugin/ExtShaderInspectorPlugin.gd").new()
+
+var shader_inspector_injector = preload("inspector_plugin/ShaderInspectorInjectPlugin.gd").new()
+
 
 var shader : Shader
 var shader_editor : Control
@@ -39,11 +43,14 @@ func _enter_tree():
 		if but.text == "Shader":
 			shader_button = but
 			break
+	
+	add_inspector_plugin(shader_inspector_injector)
 
 func _exit_tree():
 	remove_custom_type("ExtendedShader")
 	remove_control_from_bottom_panel(shader_editor)
 	print("ExtendedShader has exited the editor.")
+	remove_inspector_plugin(inspector_plugin)
 
 func edit(object : Object) -> void:
 	shader = object as ExtendedShader

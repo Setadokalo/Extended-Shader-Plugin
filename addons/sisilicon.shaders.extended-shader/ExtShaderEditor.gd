@@ -114,7 +114,7 @@ func save_external_data() -> void:
 		ResourceSaver.save(shader.resource_path, shader)
 
 func validate_filename():
-	if shader.resource_path.ends_with(".shader"):
+	if shader and shader.resource_path and shader.resource_path.ends_with(".shader"):
 		printerr("ExtendedShader ", shader.resource_path.get_basename(), " is saved as .shader! This will break on reloading the editor!")
 		print("Attempting to change file path")
 		var old_path = shader.resource_path

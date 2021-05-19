@@ -32,7 +32,6 @@ func get_raw_code() -> String:
 func update_code() -> void:
 
 	var result = expand_includes(raw_code)
-	print("parsed include statements recursively, produced: \n", result)
 	result = process_directives(result)
 	
 	#trim unneeded trailing newlines
@@ -99,7 +98,6 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 				var sub_code : String
 #				print(path.get_extension())
 				if resource is Shader:
-					print("Resource class is ", resource.get_script().get_class())
 					# get the raw code instead of the preprocessed code
 					# so that things like #define will work cross-file
 					# (allowing constructs like `#ifndef WAS_LOADED`)
