@@ -348,7 +348,7 @@ func _on_Menu_item_pressed(ID : int) -> void:
 		ONLINE_DOCS:
 			OS.shell_open("https://docs.godotengine.org/en/stable/tutorials/shading/shading_reference/index.html")
 		EXTENDED_DOCS:
-			OS.shell_open("https://github.com/SIsilicon/Extended-Shader-Plugin")
+			OS.shell_open("https://github.com/Setadokalo/Extended-Shader-Plugin")
 		
 		_:
 			_on_Shader_error(-1, "Sorry! This feature is currently unsupported. :(")

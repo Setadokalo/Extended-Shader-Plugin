@@ -334,8 +334,8 @@ func process_directives(string : String, override_line_num: int = -1) -> String:
 
 func replace_defines(line : String, defines : Dictionary) -> String:
 	for define in defines:
-		var define_var := create_reg_exp("[^\\d\\w]"+define+"[^\\d\\w]")
-		var define_func := create_reg_exp("[^\\d\\w]"+define+"[ ]*\\((?<vars>[^\\(\\)\\\\]+)\\)")
+		var define_var := create_reg_exp("(?>(^)|[^\\d\\w])"+define+"(?>[^\\d\\w]|($))")
+		var define_func := create_reg_exp("(?>^|[^\\d\\w])"+define+"[ ]*\\((?<vars>[^\\(\\)\\\\]+)\\)")
 		
 		if typeof(defines[define]) == TYPE_DICTIONARY: # If the macro is a function
 			var def_match := define_func.search(line)
@@ -357,11 +357,24 @@ func replace_defines(line : String, defines : Dictionary) -> String:
 		else:
 			var def_match := define_var.search(line)
 			while def_match:
-				line.erase(def_match.get_start() + 1, def_match.get_end() - def_match.get_start() - 2)
-				line = line.insert(def_match.get_start() + 1, defines[define] if defines[define] else 1)
+				var start = def_match.get_start()
+				if def_match.get_start(1) != -1:
+					start = -1
+				var end = def_match.get_end()
+				if def_match.get_start(2) != -1: end = end + 1
+				line.erase(start + 1, end - start - 2)
+				line = line.insert(start + 1, convert_define_to_shadlang(defines[define]))
 				def_match = define_var.search(line)
 	
 	return line
+
+func convert_define_to_shadlang(define) -> String:
+	match typeof(define):
+		TYPE_BOOL:   return "true" if define else "false"
+		TYPE_STRING: return define
+		TYPE_NIL:    return "1"
+		TYPE_OBJECT: return define.to_string() if define else "1"
+		_:           return String(define)
 
 func evaluate_condition(condition : String, defines : Dictionary) -> bool:
 	var defined := create_reg_exp("defined[ ]*\\([ ]*(?<macro>\\w[\\w\\d]+)[ ]*\\)")
@@ -385,7 +398,9 @@ func evaluate_condition(condition : String, defines : Dictionary) -> bool:
 		emit_signal("error", -1, "A condition failed to be parsed: " + condition + " : " + str(error))
 		return false
 	
-	var boolean : bool = expression.execute()
+	var boolean = expression.execute()
+	if typeof(boolean) != TYPE_BOOL:
+		emit_signal("error", -1, "A condition failed to execute: " + condition + " : return value was not a boolean!")
 	
 	return false if boolean == null else boolean
 

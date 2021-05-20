@@ -1,7 +1,9 @@
 # Extended-Shader-Plugin
 
-Hello! This is demo(?) Plugin for adding preprocessors to shaders in Godot 3.1
-It currently supports the following directives.
+![Shader Demo](https://i.imgur.com/R425Hn1.png)
+
+Hello! This is a plugin for adding preprocessors to shaders in Godot 3.x.
+It currently supports the following directives:
 * #define (There's a bug where nesting brackets inside a function macro can't work.)
 * #undef
 * #ifdef
@@ -16,7 +18,11 @@ You need to enable the plugin in the `Project Settings` first and close and open
 
 ## Making an extended shader
 
-To make an extended shader create a new resource via the inspector or the file system. Search for `Extended Shader` and create it. Note that while Godot defaults to suggesting the `.shader` file extension, this will cause import errors when the project is saved and reloaded, as Godot will mistake it for a normal shader. The plugin will attempt to automatically remap improperly saved ExtendedShaders, but this may rarely break scene dependencies.
+Perhaps the easiest way to make an extended shader is the same way you'd make a normal shader - through the ShaderMaterial menu.
+
+![ShaderMaterial Menu Demo](https://i.imgur.com/Eskc6j9.png)
+
+However, this will create an extended shader embedded in a scene, which can't be `#include`d in another shader, or shared between scenes. To make an extended shader as it's own asset, either create it through the ShaderMaterial menu, reopen the menu, and click `Save`, or create a new resource via the inspector or the file system. Search for `Extended Shader` and create it. Note that while Godot defaults to suggesting the `.shader` file extension, this will cause import errors when the project is saved and reloaded, as Godot will mistake it for a normal shader. The plugin will attempt to automatically remap improperly saved ExtendedShaders, but this may rarely break scene dependencies.
 
 ## include preprocessors
 
@@ -29,6 +35,21 @@ The current provided set of builtin library shaders is:
 * canvas_hedr
 * particles_hedr
 * spatial_hedr
+* all children of the `noise` folder:
+
+  * cellular2d
+  * cellular2x2
+  * cellular2x2x2
+  * cellular3d
+  * classic_perlin2d
+  * classic_perlin3d
+  * classic_perlin4d
+  * mathlib (mostly a library for the other noise libraries)
+  * psrdnoise
+  * simplex2d
+  * simplex3d
+  * simplex3dgrad
+  * simplex4d
 
 ## variable macros
 
@@ -40,7 +61,7 @@ The editor is still rough, and might break. If the editor begins misbehaving, *c
 
 ## One more thing
 
-This project is more of a proof of concept. While it _could_ be used in production, only light testing has been done in exported projects, and I can't guarantee it will be very stable. I'm using it for my projects, so I'll probably be idly maintaining it until Godot gets shader preprocessing built-in. I also will take pull requests.
+This project is still in beta. While it _could_ be used in production, only light testing has been done in exported projects, and I can't guarantee it will be stable. I'm using it for my projects, so I'll probably be idly maintaining it until Godot gets shader preprocessing built-in. I also will take pull requests.
 
 
 ## External Assets
