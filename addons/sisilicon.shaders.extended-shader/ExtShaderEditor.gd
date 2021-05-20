@@ -103,7 +103,7 @@ func _ready() -> void:
 
 func _on_Include_item_pressed(ID : int) -> void:
 	var line_idx = text_edit.cursor_get_line()
-	text_edit.set_line(line_idx, "#include <\"" + flattened_shaders_list[ID] + "\">\n" + text_edit.get_line(line_idx))
+	text_edit.set_line(line_idx, "#include <\"" + (flattened_shaders_list[ID] as String).trim_prefix("/") + "\">\n" + text_edit.get_line(line_idx))
 	
 func parse_settings(settings: EditorSettings):
 	print(settings.get_setting("text_editor/highlighting/background_color"))
