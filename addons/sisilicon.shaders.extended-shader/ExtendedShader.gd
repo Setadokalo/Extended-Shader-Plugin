@@ -49,21 +49,21 @@ func update_code() -> void:
 	# result = remove_comments(result)
 	.set_code(result)
 	
-func get_include_in_line(line: int) -> Dictionary:
-	var lines : PoolStringArray = raw_code.split("\n")
-	var result = Dictionary()
-	var path := get_include_for_line(lines[line])
-	if path != "":
-		if not path.get_extension():
-			path = path + ".extshader"
-		#if path
-		var start_idx = (lines[line] as String).find("include")
-		if not start_idx:
-			return result
-		result["path"] = path
-		result["start_idx"] = start_idx
-		result["end_idx"] = start_idx + "include".length()
-	return result
+#func get_include_in_line(line: int) -> Dictionary:
+#	var lines : PoolStringArray = raw_code.split("\n")
+#	var result = Dictionary()
+#	var path := get_include_for_line(lines[line])
+#	if path != "":
+#		if not path.get_extension():
+#			path = path + ".extshader"
+#		#if path
+#		var start_idx = (lines[line] as String).find("include")
+#		if not start_idx:
+#			return result
+#		result["path"] = path
+#		result["start_idx"] = start_idx
+#		result["end_idx"] = start_idx + "include".length()
+#	return result
 
 var base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]")
 var builtin_base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+<\"")
@@ -82,7 +82,7 @@ func get_include_for_line(line: String) -> String:
 			return path
 	return ""
 
-func expand_includes(string : String, override_line_num: int = -1) -> String:
+func expand_includes(string : String, override_line_num: int = -1, override_path: String = "") -> String:
 	
 	var lines : PoolStringArray = string.split("\n")
 	var line_num := 0
@@ -93,6 +93,12 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 		var is_builtin := false
 		if Match:
 			path = Match.get_string("filepath")
+			if not path.begins_with("res://"):
+				if override_path != "":
+					path = override_path + path
+				else:
+					path = (self.resource_path.get_base_dir() if self.resource_path else "res:/") + "/" + path
+					
 		else:
 			Match = builtin_include.search(line)
 			if Match:
@@ -104,11 +110,18 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 				Match, path, is_builtin)
 			continue
 		elif builtin_base_include.search(line):
-			var bltns = get_builtin_shaders()
+			var bltns = singleton.get_builtin_shaders()
 			var err_str = "Invalid built-in include statement - available built ins are "
 			for file in range(bltns.size() - 1):
-				err_str = err_str + bltns[file] + ", "
-			err_str = err_str + "and " + bltns[bltns.size() - 1]
+				if bltns[file] is String:
+					err_str = err_str + bltns[file] + ", "
+				else:
+					err_str = err_str + "children of " + bltns[file].category + ", "
+			
+			if bltns[bltns.size() - 1] is String:
+				err_str = err_str + "and " + bltns[bltns.size() - 1]
+			else:
+				err_str = err_str + "and children of " + bltns[bltns.size() - 1].category
 			emit_signal("error", 
 				line_num + 1 if override_line_num == -1 else override_line_num, 
 				err_str)
@@ -123,9 +136,7 @@ func expand_includes(string : String, override_line_num: int = -1) -> String:
 		string += line + "\n"
 	return string.strip_edges()
 
-var builtins: Array
-
-func _process_match(lines: Array, line_num: int, override_line_num: int,
+func _process_match(lines: Array, line_num: int, override_line_num: int, 
 		 Match: RegExMatch, path: String, is_builtin: bool) -> Array:
 	if not path.get_extension():
 		path = path + ".extshader"
@@ -172,7 +183,7 @@ func _process_match(lines: Array, line_num: int, override_line_num: int,
 					line_num + 1 if override_line_num == -1 else override_line_num, 
 					"You can only include shader files.")
 			
-			sub_code = expand_includes(sub_code, line_num + 1).trim_suffix("\n")
+			sub_code = expand_includes(sub_code, line_num + 1, path.get_base_dir() + "/").trim_suffix("\n")
 			if singleton:
 				print("inserting into singleton")
 				singleton.put_raw_shader(
@@ -187,7 +198,7 @@ func _process_match(lines: Array, line_num: int, override_line_num: int,
 					line_num + 1 if override_line_num == -1 else override_line_num, 
 					"Invalid include path")
 			else:	
-				var bltns = get_builtin_shaders()
+				var bltns = singleton.get_builtin_shaders()
 				var err_str = "Invalid built-in include path - available built ins are "
 				for file in range(bltns.size() - 1):
 					err_str = err_str + bltns[file] + ", "
@@ -196,22 +207,6 @@ func _process_match(lines: Array, line_num: int, override_line_num: int,
 				line_num + 1 if override_line_num == -1 else override_line_num, 
 				err_str)
 	return lines
-
-
-func get_builtin_shaders() -> Array:
-	if builtins:
-		return builtins
-	
-	var dir := Directory.new()
-	var ret = []
-	dir.open("res://addons/sisilicon.shaders.extended-shader/builtin_shaders")
-	dir.list_dir_begin(true, true)
-	var next : String = dir.get_next()
-	while next:
-		ret.append(next.trim_suffix(".extshader"))
-		next = dir.get_next()
-	builtins = ret
-	return ret
 
 func remove_comments(string : String) -> String:
 	var comment := create_reg_exp("(//[^\\n]*\\n?)|(/\\*[\\S\\s]*\\*/)")

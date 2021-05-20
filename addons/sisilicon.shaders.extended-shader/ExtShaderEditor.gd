@@ -31,13 +31,39 @@ var raw_view: bool = false
 
 var singleton := preload("ExtendedShaderSingleton.gd").new()
 
+var flattened_shaders_list := []
+
+func add_shaders_to_popup(popup: PopupMenu, shaders: Array, path: String = "", index: int = 0) -> PopupMenu:
+	var dirs := Dictionary()
+	for idx in shaders.size():
+		var shader = shaders[idx]
+		if shader is String:
+			popup.add_icon_item(preload("res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg"),\
+				shader,
+				flattened_shaders_list.size()
+			)
+			flattened_shaders_list.append(path + "/" + shader)
+		else:
+			dirs[index + idx] = shader
+	for shader_key in dirs.keys():
+		var shader = dirs[shader_key]
+		var child_popup := add_shaders_to_popup(PopupMenu.new(), shader.children,\
+			path + shader.category, shader_key)
+		popup.add_child(child_popup)
+		child_popup.name = shader.category
+		popup.add_submenu_item(shader.category, shader.category)
+	return popup
+
 func _ready() -> void:
 	error_lbl_regex.compile("^error\\((.+?)\\): (.*)$")
 	var search : PopupMenu = $Tools/Search.get_popup()
 	var edit : PopupMenu = $Tools/Edit.get_popup()
 	var goto : PopupMenu = $Tools/GoTo.get_popup()
 	var help : PopupMenu = $Tools/Help.get_popup()
+	var include : PopupMenu = $Tools/AddInclude.get_popup()
 	
+	var shaders = singleton.get_builtin_shaders()
+	add_shaders_to_popup(include, shaders)
 #	help.set_item_icon(help.get_item_index(ONLINE_DOCS),
 #		get_icon("Instance"))
 		
@@ -46,6 +72,7 @@ func _ready() -> void:
 	edit.connect("id_pressed", self, "_on_Menu_item_pressed")
 	goto.connect("id_pressed", self, "_on_Menu_item_pressed")
 	help.connect("id_pressed", self, "_on_Menu_item_pressed")
+	include.connect("id_pressed", self, "_on_Include_item_pressed")
 	
 	search.set_item_shortcut(search.get_item_index(FIND), shortcut(KEY_F, true, false, false))
 	search.set_item_shortcut(search.get_item_index(FIND_NEXT), shortcut(KEY_F3, false, false, false))
@@ -71,8 +98,12 @@ func _ready() -> void:
 	yield(get_tree(), "idle_frame")
 	get_tree().root.add_child(singleton)
 	
-	edit(shader)
+	edit(shader, true)
 
+func _on_Include_item_pressed(ID : int) -> void:
+	var line_idx = text_edit.cursor_get_line()
+	text_edit.set_line(line_idx, "#include <\"" + singleton.get_builtin_shaders()[ID] + "\">\n" + text_edit.get_line(line_idx))
+	
 func parse_settings(settings: EditorSettings):
 	print(settings.get_setting("text_editor/highlighting/background_color"))
 	text_edit.add_color_override("background_color", settings.get_setting("text_editor/highlighting/background_color"))
@@ -133,7 +164,7 @@ func validate_filename():
 		if fs: 
 			fs.scan()
 
-func edit(shader : ExtendedShader) -> void:
+func edit(shader : ExtendedShader, dry_run: bool = false) -> void:
 	if not shader:
 		return
 	shader.singleton = singleton
@@ -152,20 +183,21 @@ func edit(shader : ExtendedShader) -> void:
 		
 		_on_TextEdit_cursor_changed()
 		text_edit.text = shader.raw_code
-		apply_shaders()
+		apply_shaders(dry_run)
 		
 		if had_focus:
 			text_edit.grab_focus()
 			had_focus = false
 
-func apply_shaders() -> void:
+func apply_shaders(dry_run: bool = false) -> void:
 	validate_filename()
 	
 	if text_edit and shader and not raw_view:
 		$InfoBar/ErrorBar.text = ""
-		var editor_code : String = text_edit.text
-		shader.set_code(editor_code)
-		text_edit.set_shader_mode(shader.get_mode())
+		if not dry_run:
+			var editor_code : String = text_edit.text
+			shader.set_code(editor_code)
+			text_edit.set_shader_mode(shader.get_mode())
 		
 		had_focus = true
 
@@ -423,3 +455,4 @@ func _on_RawView_toggled(button_pressed):
 		if error_line != -1:
 			text_edit.set_line(error_line, text_edit.get_line(error_line) + " /!!!! ERROR: " + error_msg + " !!!!/")
 			text_edit.set_line_as_safe(error_line, true)
+

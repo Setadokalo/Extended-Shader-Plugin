@@ -90,3 +90,35 @@ class DefineCacheResult extends CacheResult:
 	
 	func _init(code: String, defines: Dictionary).(code):
 		mutated_defines = defines
+
+var builtins: Array
+
+func get_builtin_shaders() -> Array:
+	if builtins:
+		return builtins
+	
+	var dir: Directory = Directory.new()
+	var ret := get_shaders_for_dir("res://addons/sisilicon.shaders.extended-shader/builtin_shaders")
+	return ret
+
+func get_shaders_for_dir(dir_path: String) -> Array:
+	var dir: Directory = Directory.new()
+	var ret = []
+	dir.open(dir_path)
+	dir.list_dir_begin(true, true)
+	var next : String = dir.get_next()
+	while next:
+		if dir.dir_exists(next):
+			ret.append(NamedSubCategory.new(next, get_shaders_for_dir(dir_path + "/" + next)))
+		else:
+			ret.append(next.trim_suffix(".extshader"))
+		next = dir.get_next()
+	builtins = ret
+	return ret
+
+class NamedSubCategory:
+	var category: String
+	var children: Array
+	func _init(cat: String, chldrn: Array) -> void:
+		category = cat
+		children = chldrn
