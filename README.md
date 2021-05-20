@@ -41,3 +41,10 @@ The editor is still rough, and might break. If the editor begins misbehaving, *c
 ## One more thing
 
 This project is more of a proof of concept. While it _could_ be used in production, only light testing has been done in exported projects, and I can't guarantee it will be very stable. I'm using it for my projects, so I'll probably be idly maintaining it until Godot gets shader preprocessing built-in. I also will take pull requests.
+
+
+## External Assets
+
+This project makes use of a modified copy of the shaders provided by curly-brace's [Noise Shaders repository](https://github.com/curly-brace/Godot-3.0-Noise-Shaders/).
+
+This project also uses the [Hack font](https://github.com/source-foundry/Hack/), and an icon from [the Godot Engine](https://github.com/godotengine/godot).
