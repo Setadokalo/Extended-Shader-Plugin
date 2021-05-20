@@ -1,6 +1,8 @@
 extends Node
 
 func _ready() -> void:
+	print("res://some/random/path/with/file.withextension".get_base_dir())
+	
 	$TextEdit.text = $Sprite.material.shader.get_raw_code()
 	update_text()
 

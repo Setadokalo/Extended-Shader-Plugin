@@ -1,35 +1,15 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Test.gd" type="Script" id=1]
-[ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtendedShader.gd" type="Script" id=2]
+[ext_resource path="res://new_shader.extshader" type="Shader" id=2]
 [ext_resource path="res://pop.extshader" type="Shader" id=3]
 [ext_resource path="res://icon.png" type="Texture" id=4]
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 3 )
 
-[sub_resource type="Shader" id=2]
-code = "/**** INCLUDED FROM  \"res://addons/sisilicon.shaders.extended-shader/builtin_shaders/canvas_hedr.extshader\" ****/
-shader_type canvas_item;
-/**** END OF INCLUDE FROM  \"res://addons/sisilicon.shaders.extended-shader/builtin_shaders/canvas_hedr.extshader\" ****/
-
-void fragment() {
-	COLOR = texture(TEXTURE, UV);
-	COLOR.r = 0.2;
-}
-"
-script = ExtResource( 2 )
-defines = {
-}
-raw_code = "#include <\"canvas_hedr\">
-
-void fragment() {
-	COLOR = texture(TEXTURE, UV);
-	COLOR.r = 0.2;
-}"
-
-[sub_resource type="ShaderMaterial" id=3]
-shader = SubResource( 2 )
+[sub_resource type="ShaderMaterial" id=2]
+shader = ExtResource( 2 )
 
 [node name="Control" type="HBoxContainer"]
 anchor_right = 1.0
@@ -86,7 +66,7 @@ readonly = true
 show_line_numbers = true
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 3 )
+material = SubResource( 2 )
 position = Vector2( 511.502, 508.139 )
 scale = Vector2( 2.70382, 2.70382 )
 texture = ExtResource( 4 )
