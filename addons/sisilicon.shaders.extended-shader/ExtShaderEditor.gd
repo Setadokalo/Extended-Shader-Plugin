@@ -38,11 +38,12 @@ func add_shaders_to_popup(popup: PopupMenu, shaders: Array, path: String = "", i
 	for idx in shaders.size():
 		var shader = shaders[idx]
 		if shader is String:
-			popup.add_icon_item(preload("res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg"),\
-				shader,
-				flattened_shaders_list.size()
-			)
-			flattened_shaders_list.append(path + "/" + shader)
+			if not (shader as String).get_extension():
+				popup.add_icon_item(preload("res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg"),\
+					shader,
+					flattened_shaders_list.size()
+				)
+				flattened_shaders_list.append(path + "/" + shader)
 		else:
 			dirs[index + idx] = shader
 	for shader_key in dirs.keys():
@@ -52,6 +53,7 @@ func add_shaders_to_popup(popup: PopupMenu, shaders: Array, path: String = "", i
 		popup.add_child(child_popup)
 		child_popup.name = shader.category
 		popup.add_submenu_item(shader.category, shader.category)
+	popup.connect("id_pressed", self, "_on_Include_item_pressed")
 	return popup
 
 func _ready() -> void:
@@ -68,11 +70,10 @@ func _ready() -> void:
 #		get_icon("Instance"))
 		
 	
-	search.connect("id_pressed", self, "_on_Menu_item_pressed")
-	edit.connect("id_pressed", self, "_on_Menu_item_pressed")
-	goto.connect("id_pressed", self, "_on_Menu_item_pressed")
-	help.connect("id_pressed", self, "_on_Menu_item_pressed")
-	include.connect("id_pressed", self, "_on_Include_item_pressed")
+	search.connect( "id_pressed", self, "_on_Menu_item_pressed")
+	edit.connect(   "id_pressed", self, "_on_Menu_item_pressed")
+	goto.connect(   "id_pressed", self, "_on_Menu_item_pressed")
+	help.connect(   "id_pressed", self, "_on_Menu_item_pressed")
 	
 	search.set_item_shortcut(search.get_item_index(FIND), shortcut(KEY_F, true, false, false))
 	search.set_item_shortcut(search.get_item_index(FIND_NEXT), shortcut(KEY_F3, false, false, false))
@@ -102,7 +103,7 @@ func _ready() -> void:
 
 func _on_Include_item_pressed(ID : int) -> void:
 	var line_idx = text_edit.cursor_get_line()
-	text_edit.set_line(line_idx, "#include <\"" + singleton.get_builtin_shaders()[ID] + "\">\n" + text_edit.get_line(line_idx))
+	text_edit.set_line(line_idx, "#include <\"" + flattened_shaders_list[ID] + "\">\n" + text_edit.get_line(line_idx))
 	
 func parse_settings(settings: EditorSettings):
 	print(settings.get_setting("text_editor/highlighting/background_color"))

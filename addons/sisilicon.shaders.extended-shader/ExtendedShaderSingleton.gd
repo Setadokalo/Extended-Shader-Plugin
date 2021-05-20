@@ -15,7 +15,7 @@ func get_raw_shader(key: String) -> String:
 	value._timeout = 1200.0
 	_shader_cache[key] = value
 	return value.compiled_code
-	
+
 func put_raw_shader(key: String, value: String):
 	if not key or not value:
 		return
@@ -35,7 +35,7 @@ func get_compiled_shader(key: DefineCacheAccess) -> DefineCacheResult:
 	value._timeout = 1200.0
 	_compiled_shader_cache[key] = value
 	return value
-	
+
 func put_compiled_shader(key: DefineCacheAccess, value: DefineCacheResult):
 	if not key or not value:
 		return
@@ -68,8 +68,10 @@ func _process(delta: float) -> void:
 
 class DefineCacheAccess:
 	var defines: Dictionary
+	var path: String
 	func _init(path_: String, defines_ : Dictionary):
 		defines = defines_
+		path = path_
 
 static func def_cache_access(path: String, defines: Dictionary) -> DefineCacheAccess:
 	return DefineCacheAccess.new(path, defines)
@@ -103,7 +105,7 @@ func get_builtin_shaders() -> Array:
 
 func get_shaders_for_dir(dir_path: String) -> Array:
 	var dir: Directory = Directory.new()
-	var ret = []
+	var ret := []
 	dir.open(dir_path)
 	dir.list_dir_begin(true, true)
 	var next : String = dir.get_next()
@@ -113,8 +115,9 @@ func get_shaders_for_dir(dir_path: String) -> Array:
 		else:
 			ret.append(next.trim_suffix(".extshader"))
 		next = dir.get_next()
+	ret.sort()
 	builtins = ret
-	return ret
+	return builtins
 
 class NamedSubCategory:
 	var category: String
