@@ -1,8 +1,8 @@
 [gd_scene load_steps=19 format=2]
 
-[ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtShaderEditor.gd" type="Script" id=1]
-[ext_resource path="res://addons/sisilicon.shaders.extended-shader/Hack_Regular.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtShaderTextEditor.gd" type="Script" id=3]
+[ext_resource path="res://addons/sisilicon.shaders.extended-shader/Hack_Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtShaderTextEditor.gd" type="Script" id=2]
+[ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtShaderEditor.gd" type="Script" id=3]
 
 [sub_resource type="ButtonGroup" id=1]
 
@@ -30,7 +30,7 @@ use_mipmaps = true
 use_filter = true
 extra_spacing_top = -1
 extra_spacing_bottom = -1
-font_data = ExtResource( 2 )
+font_data = ExtResource( 1 )
 
 [sub_resource type="Image" id=6]
 data = {
@@ -84,7 +84,7 @@ content_margin_bottom = 3.0
 
 [sub_resource type="DynamicFont" id=13]
 size = 14
-font_data = ExtResource( 2 )
+font_data = ExtResource( 1 )
 
 [sub_resource type="StyleBoxEmpty" id=14]
 content_margin_right = 4.0
@@ -97,7 +97,7 @@ use_mipmaps = true
 use_filter = true
 extra_spacing_top = -1
 extra_spacing_bottom = -1
-font_data = ExtResource( 2 )
+font_data = ExtResource( 1 )
 
 [node name="ExtShaderPanel" type="PanelContainer"]
 anchor_right = 1.0
@@ -111,7 +111,7 @@ margin_left = 7.0
 margin_top = 7.0
 margin_right = 1017.0
 margin_bottom = 593.0
-script = ExtResource( 1 )
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -157,8 +157,20 @@ margin_right = 269.0
 margin_bottom = 40.0
 text = "Include..."
 
-[node name="Spacer" type="Control" parent="VBoxContainer/Tools"]
+[node name="Functions" type="MenuButton" parent="VBoxContainer/Tools"]
 margin_left = 273.0
+margin_right = 359.0
+margin_bottom = 40.0
+text = "Functions..."
+
+[node name="PrintFuncTable" type="ToolButton" parent="VBoxContainer/Tools"]
+margin_left = 363.0
+margin_right = 502.0
+margin_bottom = 40.0
+text = "Print Function Table"
+
+[node name="Spacer" type="Control" parent="VBoxContainer/Tools"]
+margin_left = 506.0
 margin_right = 771.0
 margin_bottom = 40.0
 size_flags_horizontal = 3
@@ -206,7 +218,7 @@ hiding_enabled = true
 minimap_draw = true
 caret_blink = true
 caret_blink_speed = 0.5
-script = ExtResource( 3 )
+script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -235,7 +247,7 @@ caret_blink = true
 caret_blink_speed = 0.5
 
 [node name="Timer2" type="Timer" parent="VBoxContainer/SearchBar/SearchField/Find"]
-wait_time = 0.5
+wait_time = 0.2
 one_shot = true
 
 [node name="Replace" type="LineEdit" parent="VBoxContainer/SearchBar/SearchField"]
@@ -462,6 +474,7 @@ text = "0"
 caret_blink = true
 caret_blink_speed = 0.5
 
+[connection signal="pressed" from="VBoxContainer/Tools/PrintFuncTable" to="VBoxContainer" method="_on_PrintFuncTable_pressed"]
 [connection signal="toggled" from="VBoxContainer/Tools/RawView" to="VBoxContainer" method="_on_RawView_toggled"]
 [connection signal="cursor_changed" from="VBoxContainer/TextEdit" to="VBoxContainer" method="_on_TextEdit_cursor_changed"]
 [connection signal="text_changed" from="VBoxContainer/TextEdit" to="VBoxContainer" method="_on_TextEdit_text_changed"]

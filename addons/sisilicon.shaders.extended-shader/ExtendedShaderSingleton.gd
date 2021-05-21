@@ -23,6 +23,10 @@ func put_raw_shader(key: String, value: String):
 	wrapped_value._timeout = 1200.0
 	_shader_cache[key] = wrapped_value
 
+func remove_raw_shader(key: String):
+	if _shader_cache.has(key):
+		_shader_cache.erase(key)
+
 # Contains the compiled cached state for every loaded shader.
 # Key should be a DefineCacheAccess object with the parent shaders' define state.
 # Value should be a DefineCacheResult object.

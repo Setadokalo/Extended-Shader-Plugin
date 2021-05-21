@@ -33,6 +33,12 @@ var singleton := preload("ExtendedShaderSingleton.gd").new()
 
 var flattened_shaders_list := []
 
+var functions := []
+
+var shader_func_regex
+
+var argument_regex
+
 func add_shaders_to_popup(popup: PopupMenu, shaders: Array, path: String = "", index: int = 0) -> PopupMenu:
 	var dirs := Dictionary()
 	for idx in shaders.size():
@@ -56,24 +62,61 @@ func add_shaders_to_popup(popup: PopupMenu, shaders: Array, path: String = "", i
 	popup.connect("id_pressed", self, "_on_Include_item_pressed")
 	return popup
 
+# only used for the root, in a multithreaded environment
+func add_shaders_to_popup_threadsafe(popup: PopupMenu, shaders: Array, path: String = "", index: int = 0) -> PopupMenu:
+	var dirs := Dictionary()
+	for idx in shaders.size():
+		var shader = shaders[idx]
+		if shader is String:
+			if not (shader as String).get_extension():
+				popup.call_deferred("add_icon_item", preload("res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg"),\
+					shader,
+					flattened_shaders_list.size()
+				)
+				flattened_shaders_list.append(path + "/" + shader)
+		else:
+			dirs[index + idx] = shader
+	for shader_key in dirs.keys():
+		var shader = dirs[shader_key]
+		var child_popup := add_shaders_to_popup(PopupMenu.new(), shader.children,\
+			path + shader.category, shader_key)
+		child_popup.name = shader.category
+		popup.call_deferred("add_child", child_popup)
+		popup.call_deferred("add_submenu_item", shader.category, shader.category)
+	popup.call_deferred("connect", "id_pressed", self, "_on_Include_item_pressed")
+	return popup
+
+func _threaded_shaders_init(_userdata):
+	
+	var include : PopupMenu = $Tools/AddInclude.get_popup()
+	var shaders = singleton.get_builtin_shaders()
+	add_shaders_to_popup(include, shaders)
+	shader_func_regex = ExtendedShader.create_reg_exp(
+		"\\s*(?<return>(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool))\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s*\\((?<arguments>[a-zA-Z0-9,_\\s]*?)\\)\\s*?{")
+	argument_regex = ExtendedShader.create_reg_exp(
+		"(?<type>(?:(?:out|in|inout)\\s+)?(?:(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool)))\\s*(?<name>[a-zA-Z_][a-zA-Z0-9_]*)"
+	)
+
+var thread
+
 func _ready() -> void:
 	error_lbl_regex.compile("^error\\((.+?)\\): (.*)$")
 	var search : PopupMenu = $Tools/Search.get_popup()
 	var edit : PopupMenu = $Tools/Edit.get_popup()
 	var goto : PopupMenu = $Tools/GoTo.get_popup()
 	var help : PopupMenu = $Tools/Help.get_popup()
-	var include : PopupMenu = $Tools/AddInclude.get_popup()
-	
-	var shaders = singleton.get_builtin_shaders()
-	add_shaders_to_popup(include, shaders)
+	var functions : PopupMenu = $Tools/Functions.get_popup()
+	thread = Thread.new()
+	thread.start(self, "_threaded_shaders_init")
 #	help.set_item_icon(help.get_item_index(ONLINE_DOCS),
 #		get_icon("Instance"))
 		
 	
-	search.connect( "id_pressed", self, "_on_Menu_item_pressed")
-	edit.connect(   "id_pressed", self, "_on_Menu_item_pressed")
-	goto.connect(   "id_pressed", self, "_on_Menu_item_pressed")
-	help.connect(   "id_pressed", self, "_on_Menu_item_pressed")
+	search.connect(  "id_pressed",  self, "_on_Menu_item_pressed")
+	edit.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
+	goto.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
+	help.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
+	functions.connect("id_pressed", self, "_on_Functions_item_pressed")
 	
 	search.set_item_shortcut(search.get_item_index(FIND), shortcut(KEY_F, true, false, false))
 	search.set_item_shortcut(search.get_item_index(FIND_NEXT), shortcut(KEY_F3, false, false, false))
@@ -104,6 +147,7 @@ func _ready() -> void:
 func _on_Include_item_pressed(ID : int) -> void:
 	var line_idx = text_edit.cursor_get_line()
 	text_edit.set_line(line_idx, "#include <\"" + (flattened_shaders_list[ID] as String).trim_prefix("/") + "\">\n" + text_edit.get_line(line_idx))
+	text_edit.cursor_set_line(line_idx + 1)
 	
 func parse_settings(settings: EditorSettings):
 	print(settings.get_setting("text_editor/highlighting/background_color"))
@@ -189,6 +233,7 @@ func edit(shader : ExtendedShader, dry_run: bool = false) -> void:
 		if had_focus:
 			text_edit.grab_focus()
 			had_focus = false
+	
 
 func apply_shaders(dry_run: bool = false) -> void:
 	validate_filename()
@@ -199,6 +244,11 @@ func apply_shaders(dry_run: bool = false) -> void:
 			var editor_code : String = text_edit.text
 			shader.set_code(editor_code)
 			text_edit.set_shader_mode(shader.get_mode())
+			var fn_menu: PopupMenu = $Tools/Functions.get_popup()
+			fn_menu.clear()
+			functions = parse_shader_functions()
+			for function in functions:
+				fn_menu.add_item(function.name)
 		
 		had_focus = true
 
@@ -226,6 +276,31 @@ func _on_Timer_timeout():
 		var cse_textedit := classic_shader_editor.get_child(1).get_child(1).get_child(0) as TextEdit
 		cse_textedit.set_text(shader.get_code())
 		(classic_shader_editor.get_child(1).get_child(1).get_child(3) as Timer).start(0.01)
+	
+
+var firstchar_regex = ExtendedShader.create_reg_exp("^\\s*")
+
+func _on_Functions_item_pressed(ID: int):
+	var fn: Dictionary = functions[ID]
+	var combined: String = fn.name + "("
+	if fn.has("arguments"):
+		var arguments: Array = fn.arguments
+		if arguments.size() > 1:
+			for arg_idx in arguments.size() - 1:
+				var arg = arguments[arg_idx]
+				combined = combined + arg.name + " /* " + arg.type + " */, "
+		combined = combined + arguments[arguments.size() - 1].name + " /* " + arguments[arguments.size() - 1].type + " */)"
+	else:
+		combined += ")"
+	var Match = firstchar_regex.search(text_edit.get_line(text_edit.cursor_get_line()))
+	if not Match:
+		printerr("irrefutable pattern failed??")
+		return
+	if Match.get_end() >= text_edit.cursor_get_column():
+		combined += ";"
+	
+	text_edit.insert_text_at_cursor(combined)
+	
 
 func get_flags_for_search() -> int:
 	var flags = TextEdit.SEARCH_MATCH_CASE if $SearchBar/Settings/Main/MatchCase.pressed else 0
@@ -301,7 +376,6 @@ func _on_Menu_item_pressed(ID : int) -> void:
 			find_and_select(get_flags_for_search() + TextEdit.SEARCH_BACKWARDS)
 		REPLACE: if not raw_view:
 			$SearchBar.visible = true
-			Input.focus_next
 			$SearchBar/SearchField/Find.grab_focus()
 			$SearchBar/SearchField/Replace.visible = true
 			$SearchBar/MatchesPanel/ReplaceOptions.visible = true
@@ -457,3 +531,41 @@ func _on_RawView_toggled(button_pressed):
 			text_edit.set_line(error_line, text_edit.get_line(error_line) + " /!!!! ERROR: " + error_msg + " !!!!/")
 			text_edit.set_line_as_safe(error_line, true)
 
+
+func parse_shader_functions() -> Array:
+	if not shader_func_regex or not argument_regex:
+		# can't parse without the regexes, let them finish generating off-thread
+		return []
+	if not shader:
+		printerr("tried to parse functions with null shader")
+		return []
+	var functions: Array
+	var code = shader.code # we want fully compiled code for this
+	var Matches = shader_func_regex.search_all(code)
+	for Match in Matches:
+		var function = Dictionary()
+		function["return"] = Match.get_string("return")
+		function["name"] = Match.get_string("name")
+		if (Match.get_string("arguments") as String).length() > 0:
+			var arguments = Match.get_string("arguments").split(",")
+			var parsed_arguments = []
+			for argument in arguments:
+				var ArgMatch = argument_regex.search(argument)
+				if ArgMatch:
+					parsed_arguments.append({
+						"type": ArgMatch.get_string("type"),
+						"name": ArgMatch.get_string("name")
+					})
+				else:
+					_on_Shader_error(-1, "Failed to parse arguments for function '" + function["name"] + "'")
+			function["arguments"] = parsed_arguments
+		functions.append(function)
+	return functions
+
+
+func _on_PrintFuncTable_pressed() -> void:
+	print(parse_shader_functions())
+
+
+func _exit_tree() -> void:
+	thread.wait_to_finish()

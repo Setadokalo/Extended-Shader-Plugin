@@ -27,15 +27,25 @@ func load(path : String, original_path : String):
 		return file.get_error()
 	if file.eof_reached():
 		return ERR_FILE_CORRUPT
+	file
 	var code : String = file.get_var() as String
 	if file.eof_reached():
 		return ERR_FILE_CORRUPT
-	var defines : Dictionary = file.get_var() as Dictionary
+	var raw_code_ordefines = file.get_var()
+	var defines: Dictionary
+	var raw_code: String
+	if typeof(raw_code_ordefines) == TYPE_DICTIONARY:
+		defines = raw_code_ordefines
+	else:
+		raw_code = raw_code_ordefines
+		defines = file.get_var()
 	file.close()
 	
 	if code:
 		var shader := ExtendedShader.new()
-		shader.set_code(code)
+		shader.set_code_noprocess(code)
+		if raw_code and raw_code != "":
+			shader.apply_cached_code(raw_code)
 		if defines:
 			shader.defines = defines
 		return shader

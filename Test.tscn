@@ -1,14 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Test.gd" type="Script" id=1]
 [ext_resource path="res://new_shader.extshader" type="Shader" id=2]
-[ext_resource path="res://pop.extshader" type="Shader" id=3]
 [ext_resource path="res://icon.png" type="Texture" id=4]
 
 [sub_resource type="ShaderMaterial" id=1]
-shader = ExtResource( 3 )
-
-[sub_resource type="ShaderMaterial" id=2]
 shader = ExtResource( 2 )
 
 [node name="Control" type="HBoxContainer"]
@@ -41,7 +37,6 @@ syntax_highlighting = true
 show_line_numbers = true
 
 [node name="TextEdit2" type="TextEdit" parent="."]
-material = SubResource( 1 )
 margin_left = 514.0
 margin_right = 1024.0
 margin_bottom = 600.0
@@ -66,7 +61,7 @@ readonly = true
 show_line_numbers = true
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 2 )
+material = SubResource( 1 )
 position = Vector2( 511.502, 508.139 )
 scale = Vector2( 2.70382, 2.70382 )
 texture = ExtResource( 4 )
@@ -74,6 +69,8 @@ texture = ExtResource( 4 )
 [node name="Timer" type="Timer" parent="."]
 wait_time = 2.0
 one_shot = true
+
+[node name="Sprite2" type="Sprite" parent="."]
 
 [connection signal="text_changed" from="TextEdit" to="." method="_on_TextEdit_text_changed"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

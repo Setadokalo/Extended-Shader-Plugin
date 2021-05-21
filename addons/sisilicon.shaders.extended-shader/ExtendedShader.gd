@@ -34,11 +34,20 @@ func set_code(value : String) -> void:
 	raw_code = value
 	update_code()
 
+func set_code_noprocess(value : String) -> void:
+	raw_code = value
+
 func get_raw_code() -> String:
 	return raw_code
 
+func apply_cached_code(code: String):
+	.set_code(code)
+
 func update_code() -> void:
 
+	if singleton:
+		singleton.remove_raw_shader(resource_path 
+			if resource_path.begins_with("res://") else ("res://" + resource_path))
 	var result = expand_includes(raw_code)
 	result = process_directives(result)
 	

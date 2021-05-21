@@ -17,6 +17,7 @@ func save(path : String, resource : Resource, flags : int) -> int:
 		return file.get_error()
 	
 	file.store_var((resource as ExtendedShader).get_raw_code())
+	file.store_var((resource as ExtendedShader).get_code())
 	file.store_var((resource as ExtendedShader).defines)
 	file.close()
 	

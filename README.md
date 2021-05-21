@@ -59,6 +59,10 @@ The extended shader has a `defines` dictionary that allows you to prepend macros
 
 The editor is still rough, and might break. If the editor begins misbehaving, *copy your shader text out of the file*, then restart the editor (sometimes the shader file will become broken when the editor breaks, at which point you need to recreate it using the copied source code -- it's currently unknown if this bug only occurs when live-editing the editor script files). Also note that if you use `#if`, `#ifdef` or `#ifndef` statements, code that gets omitted by them will not be accounted for, and so it's a good idea to test each branch for errors.
 
+## Performance
+
+While the editor doesn't cause any noticeable lag to me, the code as is is fairly inefficient and could be optimised quite a bit. On slower machines, this might be noticeable as small editor freezes when shaders compile (namely, )
+
 ## One more thing
 
 This project is still in beta. While it _could_ be used in production, only light testing has been done in exported projects, and I can't guarantee it will be stable. I'm using it for my projects, so I'll probably be idly maintaining it until Godot gets shader preprocessing built-in. I also will take pull requests.
