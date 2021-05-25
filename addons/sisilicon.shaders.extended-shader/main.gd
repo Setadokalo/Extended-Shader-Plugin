@@ -35,7 +35,7 @@ func _enter_tree():
 			var shader_timer := panel.get_child(1).get_child(1).get_child(3) as Timer
 			print(shader_errlbl)
 			shader_editor.get_child(0).error_label = shader_errlbl
-			shader_editor.get_child(0).classic_shader_editor = panel
+			shader_editor.get_child(0).inject_classic_shader_editor(panel)
 			shader_editor.get_child(0).shader_timer = shader_timer
 			shader_editor.get_child(0).fs = get_editor_interface().get_resource_filesystem()
 	

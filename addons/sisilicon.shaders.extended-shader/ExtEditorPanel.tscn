@@ -1,8 +1,9 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://addons/sisilicon.shaders.extended-shader/Hack_Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtShaderTextEditor.gd" type="Script" id=2]
 [ext_resource path="res://addons/sisilicon.shaders.extended-shader/ExtShaderEditor.gd" type="Script" id=3]
+[ext_resource path="res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg" type="Texture" id=4]
 
 [sub_resource type="ButtonGroup" id=1]
 
@@ -32,7 +33,7 @@ extra_spacing_top = -1
 extra_spacing_bottom = -1
 font_data = ExtResource( 1 )
 
-[sub_resource type="Image" id=6]
+[sub_resource type="Image" id=16]
 data = {
 "data": PoolByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 204, 204, 204, 0, 223, 223, 223, 0, 223, 223, 223, 0, 204, 204, 204, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 204, 204, 204, 0, 204, 204, 204, 10, 223, 223, 223, 186, 223, 223, 223, 186, 204, 204, 204, 10, 204, 204, 204, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 223, 223, 223, 169, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 169, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 221, 221, 221, 0, 222, 222, 222, 117, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 117, 221, 221, 221, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 221, 221, 221, 0, 220, 220, 220, 67, 223, 223, 223, 251, 223, 223, 223, 252, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 252, 223, 223, 223, 251, 220, 220, 220, 67, 221, 221, 221, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 32, 223, 223, 223, 236, 223, 223, 223, 254, 222, 222, 222, 119, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 119, 223, 223, 223, 254, 223, 223, 223, 235, 223, 223, 223, 32, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 193, 223, 223, 223, 254, 223, 223, 223, 172, 222, 222, 222, 0, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 0, 223, 223, 223, 172, 223, 223, 223, 254, 223, 223, 223, 193, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 178, 223, 223, 223, 192, 208, 208, 208, 11, 215, 215, 215, 0, 223, 223, 223, 254, 223, 223, 223, 254, 215, 215, 215, 0, 208, 208, 208, 11, 223, 223, 223, 192, 223, 223, 223, 177, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 0, 208, 208, 208, 0, 223, 223, 223, 0, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 0, 208, 208, 208, 0, 223, 223, 223, 0, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 179, 223, 223, 223, 179, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 167, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 167, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 167, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 167, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 "format": "RGBA8",
@@ -44,10 +45,10 @@ data = {
 [sub_resource type="ImageTexture" id=7]
 flags = 0
 flags = 0
-image = SubResource( 6 )
+image = SubResource( 16 )
 size = Vector2( 16, 16 )
 
-[sub_resource type="Image" id=8]
+[sub_resource type="Image" id=17]
 data = {
 "data": PoolByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 167, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 167, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 167, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 167, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 223, 223, 223, 0, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 179, 223, 223, 223, 179, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 222, 222, 222, 0, 208, 208, 208, 0, 223, 223, 223, 0, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 0, 208, 208, 208, 0, 222, 222, 222, 0, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 178, 222, 222, 222, 191, 208, 208, 208, 11, 215, 215, 215, 0, 223, 223, 223, 254, 223, 223, 223, 254, 215, 215, 215, 0, 208, 208, 208, 11, 222, 222, 222, 191, 223, 223, 223, 177, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 223, 223, 223, 0, 223, 223, 223, 195, 223, 223, 223, 254, 223, 223, 223, 169, 222, 222, 222, 0, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 0, 223, 223, 223, 169, 223, 223, 223, 254, 223, 223, 223, 195, 223, 223, 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 218, 218, 218, 0, 218, 218, 218, 35, 223, 223, 223, 237, 223, 223, 223, 254, 222, 222, 222, 117, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 118, 223, 223, 223, 254, 223, 223, 223, 237, 218, 218, 218, 35, 218, 218, 218, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 220, 220, 0, 222, 222, 222, 71, 223, 223, 223, 252, 223, 223, 223, 251, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 251, 223, 223, 223, 252, 222, 222, 222, 71, 220, 220, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 223, 223, 223, 122, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 254, 223, 223, 223, 122, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 174, 223, 223, 223, 254, 223, 223, 223, 254, 222, 222, 222, 174, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 212, 212, 212, 0, 212, 212, 212, 12, 223, 223, 223, 187, 223, 223, 223, 187, 212, 212, 212, 12, 212, 212, 212, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 212, 212, 212, 0, 223, 223, 223, 0, 223, 223, 223, 0, 212, 212, 212, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 "format": "RGBA8",
@@ -59,10 +60,10 @@ data = {
 [sub_resource type="ImageTexture" id=9]
 flags = 0
 flags = 0
-image = SubResource( 8 )
+image = SubResource( 17 )
 size = Vector2( 16, 16 )
 
-[sub_resource type="Image" id=10]
+[sub_resource type="Image" id=18]
 data = {
 "data": PoolByteArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 216, 216, 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 216, 216, 0, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 85, 216, 216, 216, 20, 216, 216, 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 216, 216, 0, 216, 216, 216, 20, 222, 222, 222, 85, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 85, 223, 223, 223, 254, 223, 223, 223, 210, 216, 216, 216, 20, 216, 216, 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 216, 216, 0, 216, 216, 216, 20, 223, 223, 223, 210, 223, 223, 223, 254, 222, 222, 222, 85, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 218, 218, 218, 0, 218, 218, 218, 21, 223, 223, 223, 210, 224, 224, 224, 255, 223, 223, 223, 209, 216, 216, 216, 20, 216, 216, 216, 0, 216, 216, 216, 0, 216, 216, 216, 20, 223, 223, 223, 209, 224, 224, 224, 255, 223, 223, 223, 210, 218, 218, 218, 21, 218, 218, 218, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 219, 219, 219, 0, 220, 220, 220, 22, 223, 223, 223, 210, 224, 224, 224, 255, 222, 222, 222, 207, 216, 216, 216, 20, 216, 216, 216, 20, 223, 223, 223, 208, 224, 224, 224, 255, 223, 223, 223, 210, 220, 220, 220, 22, 219, 219, 219, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 220, 220, 0, 220, 220, 220, 22, 223, 223, 223, 212, 224, 224, 224, 255, 222, 222, 222, 207, 222, 222, 222, 207, 224, 224, 224, 255, 223, 223, 223, 211, 220, 220, 220, 22, 220, 220, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 220, 220, 0, 220, 220, 220, 22, 223, 223, 223, 213, 224, 224, 224, 255, 224, 224, 224, 255, 223, 223, 223, 212, 220, 220, 220, 22, 220, 220, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 216, 216, 0, 216, 216, 216, 20, 223, 223, 223, 210, 224, 224, 224, 255, 224, 224, 224, 255, 223, 223, 223, 210, 216, 216, 216, 20, 216, 216, 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 216, 216, 0, 216, 216, 216, 20, 223, 223, 223, 210, 224, 224, 224, 255, 223, 223, 223, 210, 223, 223, 223, 210, 224, 224, 224, 255, 223, 223, 223, 209, 216, 216, 216, 20, 216, 216, 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 216, 216, 0, 216, 216, 216, 20, 223, 223, 223, 209, 224, 224, 224, 255, 223, 223, 223, 210, 218, 218, 218, 21, 220, 220, 220, 22, 223, 223, 223, 210, 224, 224, 224, 255, 223, 223, 223, 208, 216, 216, 216, 20, 216, 216, 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 216, 216, 0, 216, 216, 216, 20, 222, 222, 222, 207, 224, 224, 224, 255, 223, 223, 223, 211, 220, 220, 220, 22, 219, 219, 219, 0, 220, 220, 220, 0, 220, 220, 220, 22, 223, 223, 223, 211, 224, 224, 224, 255, 222, 222, 222, 207, 216, 216, 216, 20, 216, 216, 216, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 85, 224, 224, 224, 255, 223, 223, 223, 212, 220, 220, 220, 22, 220, 220, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 220, 220, 0, 220, 220, 220, 22, 223, 223, 223, 212, 224, 224, 224, 255, 222, 222, 222, 85, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 222, 222, 222, 86, 220, 220, 220, 22, 220, 220, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 220, 220, 0, 220, 220, 220, 22, 222, 222, 222, 86, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 222, 222, 222, 0, 220, 220, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 220, 220, 0, 222, 222, 222, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
 "format": "RGBA8",
@@ -74,7 +75,7 @@ data = {
 [sub_resource type="ImageTexture" id=11]
 flags = 0
 flags = 0
-image = SubResource( 10 )
+image = SubResource( 18 )
 size = Vector2( 16, 16 )
 
 [sub_resource type="StyleBoxEmpty" id=12]
@@ -156,6 +157,7 @@ margin_left = 197.0
 margin_right = 269.0
 margin_bottom = 40.0
 text = "Include..."
+items = [ "canvas_hedr", ExtResource( 4 ), 0, false, false, 0, 0, null, "", false, "spatial_hedr", ExtResource( 4 ), 0, false, false, 1, 0, null, "", false, "math", ExtResource( 4 ), 0, false, false, 2, 0, null, "", false, "particles_hedr", ExtResource( 4 ), 0, false, false, 3, 0, null, "", false, "noise", null, 0, false, false, 4, 0, null, "noise", false, "canvas_hedr", ExtResource( 4 ), 0, false, false, 0, 0, null, "", false, "spatial_hedr", ExtResource( 4 ), 0, false, false, 1, 0, null, "", false, "math", ExtResource( 4 ), 0, false, false, 2, 0, null, "", false, "particles_hedr", ExtResource( 4 ), 0, false, false, 3, 0, null, "", false, "noise", null, 0, false, false, 9, 0, null, "noise", false, "canvas_hedr", ExtResource( 4 ), 0, false, false, 0, 0, null, "", false, "spatial_hedr", ExtResource( 4 ), 0, false, false, 1, 0, null, "", false, "math", ExtResource( 4 ), 0, false, false, 2, 0, null, "", false, "particles_hedr", ExtResource( 4 ), 0, false, false, 3, 0, null, "", false, "noise", null, 0, false, false, 14, 0, null, "noise", false ]
 
 [node name="Functions" type="MenuButton" parent="VBoxContainer/Tools"]
 margin_left = 273.0
@@ -167,6 +169,8 @@ text = "Functions..."
 margin_left = 363.0
 margin_right = 502.0
 margin_bottom = 40.0
+focus_mode = 0
+enabled_focus_mode = 0
 text = "Print Function Table"
 
 [node name="Spacer" type="Control" parent="VBoxContainer/Tools"]
@@ -225,9 +229,9 @@ __meta__ = {
 
 [node name="SearchBar" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
-margin_top = 549.0
+margin_top = 534.0
 margin_right = 1010.0
-margin_bottom = 573.0
+margin_bottom = 558.0
 
 [node name="SearchField" type="VBoxContainer" parent="VBoxContainer/SearchBar"]
 margin_right = 628.0
@@ -362,6 +366,9 @@ texture_hover = SubResource( 11 )
 [node name="Timer" type="Timer" parent="VBoxContainer"]
 one_shot = true
 
+[node name="FocusChangedTimer" type="Timer" parent="VBoxContainer"]
+wait_time = 0.1
+
 [node name="InfoBar" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 562.0
 margin_right = 1010.0
@@ -474,15 +481,52 @@ text = "0"
 caret_blink = true
 caret_blink_speed = 0.5
 
+[connection signal="focus_entered" from="VBoxContainer/Tools/Search" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/Tools/Search" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/Tools/Edit" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/Tools/Edit" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/Tools/GoTo" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/Tools/GoTo" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/Tools/Help" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/Tools/Help" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/Tools/AddInclude" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/Tools/AddInclude" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/Tools/Functions" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/Tools/Functions" to="VBoxContainer" method="_on_child_focus_lost"]
 [connection signal="pressed" from="VBoxContainer/Tools/PrintFuncTable" to="VBoxContainer" method="_on_PrintFuncTable_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/Tools/RawView" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/Tools/RawView" to="VBoxContainer" method="_on_child_focus_lost"]
 [connection signal="toggled" from="VBoxContainer/Tools/RawView" to="VBoxContainer" method="_on_RawView_toggled"]
 [connection signal="cursor_changed" from="VBoxContainer/TextEdit" to="VBoxContainer" method="_on_TextEdit_cursor_changed"]
+[connection signal="focus_entered" from="VBoxContainer/TextEdit" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/TextEdit" to="VBoxContainer" method="_on_child_focus_lost"]
 [connection signal="text_changed" from="VBoxContainer/TextEdit" to="VBoxContainer" method="_on_TextEdit_text_changed"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/SearchField/Find" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/SearchField/Find" to="VBoxContainer" method="_on_child_focus_lost"]
 [connection signal="text_changed" from="VBoxContainer/SearchBar/SearchField/Find" to="VBoxContainer" method="_on_Find_text_changed"]
 [connection signal="timeout" from="VBoxContainer/SearchBar/SearchField/Find/Timer2" to="VBoxContainer" method="_on_Find_Field_timeout"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/SearchField/Replace" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/SearchField/Replace" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/MatchesPanel/FindOptions/Previous" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/MatchesPanel/FindOptions/Previous" to="VBoxContainer" method="_on_child_focus_lost"]
 [connection signal="pressed" from="VBoxContainer/SearchBar/MatchesPanel/FindOptions/Previous" to="VBoxContainer" method="_on_Previous_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/MatchesPanel/FindOptions/Next" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/MatchesPanel/FindOptions/Next" to="VBoxContainer" method="_on_child_focus_lost"]
 [connection signal="pressed" from="VBoxContainer/SearchBar/MatchesPanel/FindOptions/Next" to="VBoxContainer" method="_on_Next_pressed"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/MatchesPanel/ReplaceOptions/Replace" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/MatchesPanel/ReplaceOptions/Replace" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/MatchesPanel/ReplaceOptions/Replace All" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/MatchesPanel/ReplaceOptions/Replace All" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/Settings/Main/MatchCase" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/Settings/Main/MatchCase" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/Settings/Main/WholeWords" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/Settings/Main/WholeWords" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/Settings/Replace/SelectionOnly" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/Settings/Replace/SelectionOnly" to="VBoxContainer" method="_on_child_focus_lost"]
+[connection signal="focus_entered" from="VBoxContainer/SearchBar/CloseButton" to="VBoxContainer" method="_on_child_focus_gained"]
+[connection signal="focus_exited" from="VBoxContainer/SearchBar/CloseButton" to="VBoxContainer" method="_on_child_focus_lost"]
 [connection signal="pressed" from="VBoxContainer/SearchBar/CloseButton" to="VBoxContainer" method="_on_CloseSearchButton_pressed"]
 [connection signal="timeout" from="VBoxContainer/Timer" to="VBoxContainer" method="_on_Timer_timeout"]
+[connection signal="timeout" from="VBoxContainer/FocusChangedTimer" to="VBoxContainer" method="_on_FocusChangedTimer_timeout"]
 [connection signal="pressed" from="Goto/GotoLineDialog/Buttons/Cancel" to="VBoxContainer" method="_on_Goto_Cancel_pressed"]
 [connection signal="pressed" from="Goto/GotoLineDialog/Buttons/Ok" to="VBoxContainer" method="_on_Goto_Ok_pressed"]

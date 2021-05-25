@@ -62,7 +62,7 @@ show_line_numbers = true
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 1 )
-position = Vector2( 511.502, 508.139 )
+position = Vector2( 512, 508 )
 scale = Vector2( 2.70382, 2.70382 )
 texture = ExtResource( 4 )
 

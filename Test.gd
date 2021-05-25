@@ -8,7 +8,7 @@ func _ready() -> void:
 
 func update_text() -> void:
 	$Sprite.material.shader.set_code($TextEdit.text)
-	
+
 	$TextEdit2.text = $Sprite.material.shader.get_code()
 	$TextEdit2.cursor_set_line($TextEdit.cursor_get_line())
 	$TextEdit2.cursor_set_column($TextEdit.cursor_get_column())

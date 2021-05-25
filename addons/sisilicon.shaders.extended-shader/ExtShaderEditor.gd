@@ -26,7 +26,13 @@ var error_lbl_regex = RegEx.new()
 
 var shader_timer : Timer
 
-var classic_shader_editor: Control
+var cse_textedit: TextEdit
+var cse_timer: Timer
+
+func inject_classic_shader_editor(editor: Control) -> void:
+	cse_textedit = editor.get_child(1).get_child(1).get_child(0) as TextEdit
+	cse_timer = editor.get_child(1).get_child(1).get_child(3) as Timer
+	
 var raw_view: bool = false
 
 var singleton := preload("ExtendedShaderSingleton.gd").new()
@@ -99,12 +105,21 @@ func _threaded_shaders_init(_userdata):
 
 var thread
 
+var menu_buttons := []
+
 func _ready() -> void:
 	error_lbl_regex.compile("^error\\((.+?)\\): (.*)$")
-	var search : PopupMenu = $Tools/Search.get_popup()
-	var edit : PopupMenu = $Tools/Edit.get_popup()
-	var goto : PopupMenu = $Tools/GoTo.get_popup()
-	var help : PopupMenu = $Tools/Help.get_popup()
+	menu_buttons = [
+		$Tools/Search,
+		$Tools/Edit,
+		$Tools/GoTo,
+		$Tools/Help,
+		$Tools/Functions
+	]
+	var search: PopupMenu = $Tools/Search.get_popup()
+	var edit: PopupMenu = $Tools/Edit.get_popup()
+	var goto: PopupMenu = $Tools/GoTo.get_popup()
+	var help: PopupMenu = $Tools/Help.get_popup()
 	var functions : PopupMenu = $Tools/Functions.get_popup()
 	thread = Thread.new()
 	thread.start(self, "_threaded_shaders_init")
@@ -117,6 +132,18 @@ func _ready() -> void:
 	goto.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
 	help.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
 	functions.connect("id_pressed", self, "_on_Functions_item_pressed")
+	
+	search.connect(  "focus_entered",  self, "_on_child_focus_gained")
+	edit.connect(    "focus_entered",  self, "_on_child_focus_gained")
+	goto.connect(    "focus_entered",  self, "_on_child_focus_gained")
+	help.connect(    "focus_entered",  self, "_on_child_focus_gained")
+	functions.connect("focus_entered", self, "_on_child_focus_gained")
+	
+	search.connect(  "focus_exited",  self, "_on_child_focus_lost")
+	edit.connect(    "focus_exited",  self, "_on_child_focus_lost")
+	goto.connect(    "focus_exited",  self, "_on_child_focus_lost")
+	help.connect(    "focus_exited",  self, "_on_child_focus_lost")
+	functions.connect("focus_exited", self, "_on_child_focus_lost")
 	
 	search.set_item_shortcut(search.get_item_index(FIND), shortcut(KEY_F, true, false, false))
 	search.set_item_shortcut(search.get_item_index(FIND_NEXT), shortcut(KEY_F3, false, false, false))
@@ -268,15 +295,19 @@ func _on_Preproc_error(_line: int, _error_msg: String):
 	
 
 func _on_Timer_timeout():
+	var had_focus = text_edit.has_focus()
 	preproc_errored = false
 	error_line = -1
 	apply_shaders()
+	if had_focus:
+		text_edit.grab_focus()
 	yield(get_tree(), "idle_frame")
+	if had_focus:
+		text_edit.grab_focus()
 	if not preproc_errored:
-		var cse_textedit := classic_shader_editor.get_child(1).get_child(1).get_child(0) as TextEdit
 		cse_textedit.set_text(shader.get_code())
-		(classic_shader_editor.get_child(1).get_child(1).get_child(3) as Timer).start(0.01)
-	
+		cse_timer.start(0.01)
+
 
 var firstchar_regex = ExtendedShader.create_reg_exp("^\\s*")
 
@@ -414,7 +445,20 @@ func _on_Menu_item_pressed(ID : int) -> void:
 				text_edit.set_line(text_edit.cursor_get_line(), "\t" + text)
 				
 #		DELETE_LINE: pass
-#		TOGGLE_COMMENT: pass
+		TOGGLE_COMMENT: if not raw_view:
+			if text_edit.is_selection_active():
+				for line in range(text_edit.get_selection_from_line(), text_edit.get_selection_to_line() + 1):
+					var text = text_edit.get_line(line)
+					if text.begins_with("//"):
+						text_edit.set_line(line, text.substr(2))
+					else:
+						text_edit.set_line(line, "//" + text)
+			else:
+				var text = text_edit.get_line(text_edit.cursor_get_line())
+				if text.begins_with("//"):
+					text_edit.set_line(text_edit.cursor_get_line(), text.substr(1))
+				else:
+					text_edit.set_line(text_edit.cursor_get_line(), "//" + text)
 #		CLONE_DOWN: pass
 #		
 #		COMPLETE_SYMBOL: pass
@@ -566,6 +610,25 @@ func parse_shader_functions() -> Array:
 func _on_PrintFuncTable_pressed() -> void:
 	print(parse_shader_functions())
 
+var child_has_focus := false
+var child_has_focus_buffer := false
+
+func _on_child_focus_gained():
+	child_has_focus_buffer = true
+	$FocusChangedTimer.start()
+
+func _on_child_focus_lost():
+	child_has_focus_buffer = false
+	$FocusChangedTimer.start()
+
 
 func _exit_tree() -> void:
 	thread.wait_to_finish()
+
+
+func _on_FocusChangedTimer_timeout() -> void:
+	if not child_has_focus == child_has_focus_buffer:
+		child_has_focus = child_has_focus_buffer
+		for child in menu_buttons:
+			var mb := child as MenuButton
+			mb.set_disable_shortcuts(not child_has_focus)
