@@ -1,10 +1,30 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Test.gd" type="Script" id=1]
 [ext_resource path="res://new_shader.extshader" type="Shader" id=2]
+[ext_resource path="res://addons/sisilicon.shaders.extended-shader/Hack_Regular.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://icon.png" type="Texture" id=4]
+[ext_resource path="res://TextEdit.gd" type="Script" id=5]
 
-[sub_resource type="ShaderMaterial" id=1]
+[sub_resource type="DynamicFontData" id=3]
+antialiased = false
+font_path = "res://addons/sisilicon.shaders.extended-shader/Hack_Regular.ttf"
+
+[sub_resource type="DynamicFont" id=4]
+size = 15
+extra_spacing_top = -1
+extra_spacing_bottom = -1
+font_data = SubResource( 3 )
+
+[sub_resource type="DynamicFont" id=1]
+size = 14
+use_mipmaps = true
+use_filter = true
+extra_spacing_top = -1
+extra_spacing_bottom = -1
+font_data = ExtResource( 3 )
+
+[sub_resource type="ShaderMaterial" id=2]
 shader = ExtResource( 2 )
 
 [node name="Control" type="HBoxContainer"]
@@ -19,8 +39,10 @@ __meta__ = {
 margin_right = 510.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
+custom_fonts/font = SubResource( 4 )
 text = "#include \"canvasitem_header.extshader\"
-
+WWWW W
+2
 #define PURPLE
 
 #define PURPLCOL vec3(1.0, 0.2, 1.0)
@@ -32,15 +54,57 @@ void fragment() {
 #ifdef PURPLE
 	COLOR.rgb = COLOR.rgb * PURPLCOL;
 #endif
-}"
+}
+
+
+
+
+"
+highlight_current_line = true
 syntax_highlighting = true
 show_line_numbers = true
+draw_tabs = true
+draw_spaces = true
+fold_gutter = true
+highlight_all_occurrences = true
+smooth_scrolling = true
+hiding_enabled = true
+script = ExtResource( 5 )
+
+[node name="HoverTimer" type="Timer" parent="TextEdit"]
+wait_time = 0.25
+one_shot = true
+
+[node name="PopupPanel" type="PopupPanel" parent="TextEdit"]
+margin_right = 155.0
+margin_bottom = 67.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="TextEdit/PopupPanel"]
+margin_left = 45.5569
+margin_top = 22.7785
+margin_right = 112.557
+margin_bottom = 36.7785
+text = "Some Text"
+
+[node name="Control" type="Control" parent="TextEdit"]
+margin_left = 43.0
+margin_top = 39.0
+margin_right = 83.0
+margin_bottom = 79.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="TextEdit2" type="TextEdit" parent="."]
 margin_left = 514.0
 margin_right = 1024.0
 margin_bottom = 600.0
 size_flags_horizontal = 3
+custom_icons/tab = ExtResource( 4 )
+custom_fonts/font = SubResource( 1 )
 text = "/**** INCLUDED FROM  \"canvasitem_header.extshader\" ****/
 shader_type canvas_item;
 
@@ -58,10 +122,32 @@ void fragment() {
 
 "
 readonly = true
+syntax_highlighting = true
 show_line_numbers = true
+smooth_scrolling = true
+script = ExtResource( 5 )
+
+[node name="HoverTimer" type="Timer" parent="TextEdit2"]
+wait_time = 0.25
+one_shot = true
+
+[node name="PopupPanel" type="PopupPanel" parent="TextEdit2"]
+margin_left = -514.0
+margin_right = -359.0
+margin_bottom = 67.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="TextEdit2/PopupPanel"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 151.0
+margin_bottom = 63.0
+text = "Some Other Text"
 
 [node name="Sprite" type="Sprite" parent="."]
-material = SubResource( 1 )
+material = SubResource( 2 )
 position = Vector2( 512, 508 )
 scale = Vector2( 2.70382, 2.70382 )
 texture = ExtResource( 4 )
@@ -72,5 +158,15 @@ one_shot = true
 
 [node name="Sprite2" type="Sprite" parent="."]
 
+[connection signal="cursor_changed" from="TextEdit" to="TextEdit" method="_on_TextEdit_cursor_changed"]
+[connection signal="info_clicked" from="TextEdit" to="TextEdit" method="_on_TextEdit_info_clicked"]
+[connection signal="mouse_entered" from="TextEdit" to="TextEdit" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="TextEdit" to="TextEdit" method="_on_mouse_exited"]
+[connection signal="request_completion" from="TextEdit" to="TextEdit" method="_on_TextEdit_request_completion"]
+[connection signal="symbol_lookup" from="TextEdit" to="TextEdit" method="_on_TextEdit_symbol_lookup"]
 [connection signal="text_changed" from="TextEdit" to="." method="_on_TextEdit_text_changed"]
+[connection signal="timeout" from="TextEdit/HoverTimer" to="TextEdit" method="_on_HoverTimer_timeout"]
+[connection signal="mouse_entered" from="TextEdit2" to="TextEdit2" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="TextEdit2" to="TextEdit2" method="_on_mouse_exited"]
+[connection signal="timeout" from="TextEdit2/HoverTimer" to="TextEdit2" method="_on_HoverTimer_timeout"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

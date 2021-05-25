@@ -194,7 +194,6 @@ func _process_match(lines: Array, line_num: int, override_line_num: int,
 			
 			sub_code = expand_includes(sub_code, line_num + 1, path.get_base_dir() + "/").trim_suffix("\n")
 			if singleton:
-				print("inserting into singleton")
 				singleton.put_raw_shader(
 					path, sub_code)
 			lines.insert(line_num, "/**** END OF INCLUDE FROM  \"" + path + "\" ****/")

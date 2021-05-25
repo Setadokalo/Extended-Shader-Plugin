@@ -1,7 +1,7 @@
 extends Node
 
 func _ready() -> void:
-	print("res://some/random/path/with/file.withextension".get_base_dir())
+#	print("res://some/random/path/with/file.withextension".get_base_dir())
 	
 	$TextEdit.text = $Sprite.material.shader.get_raw_code()
 	update_text()
@@ -12,6 +12,8 @@ func update_text() -> void:
 	$TextEdit2.text = $Sprite.material.shader.get_code()
 	$TextEdit2.cursor_set_line($TextEdit.cursor_get_line())
 	$TextEdit2.cursor_set_column($TextEdit.cursor_get_column())
+	$TextEdit.set_shader_mode($Sprite.material.shader.get_mode())
+	$TextEdit2.set_shader_mode($Sprite.material.shader.get_mode())
 
 func _on_TextEdit_text_changed() -> void:
 	$Timer.start()

@@ -25,7 +25,6 @@ class VirtualShaderEditor extends EditorProperty:
 	
 	func _ready() -> void:
 		yield(get_tree(), "idle_frame")
-		print("injecting into shader editor")
 		menu = get_parent().get_child(1).get_child(1)
 		menu.connect("visibility_changed", self, "_on_Menu_visibility_changed")
 		menu.connect("index_pressed", self, "_on_Menu_Option_selected")

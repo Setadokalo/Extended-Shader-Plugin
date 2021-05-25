@@ -42,6 +42,10 @@ config/name="Extended Shader"
 run/main_scene="res://Test.tscn"
 config/icon="res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg"
 
+[display]
+
+window/energy_saving/keep_screen_on=false
+
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/sisilicon.shaders.extended-shader/plugin.cfg" )
