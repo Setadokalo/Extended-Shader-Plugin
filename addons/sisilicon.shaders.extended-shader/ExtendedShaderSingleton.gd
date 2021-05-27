@@ -8,6 +8,21 @@ extends Node
 # Value should be a String of the contents. 
 var _shader_cache: Dictionary = Dictionary()
 
+static func create_reg_exp(string : String) -> RegEx:
+	var reg_exp := RegEx.new()
+	reg_exp.compile(string)
+	
+	if not reg_exp.is_valid():
+		printerr("'" + string + "' is not a valid regular expression!")
+	
+	return reg_exp
+
+var shader_func_regex := create_reg_exp(
+		"\\s*(?<return>(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool))\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s*\\((?<arguments>[a-zA-Z0-9,_\\s]*?)\\)\\s*?{")
+var argument_regex := create_reg_exp(
+		"(?<type>(?:(?:out|in|inout)\\s+)?(?:(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool)))\\s*(?<name>[a-zA-Z_][a-zA-Z0-9_]*)"
+	)
+
 func get_raw_shader(key: String) -> String:
 	if not key or not _shader_cache.has(key):
 		return ""

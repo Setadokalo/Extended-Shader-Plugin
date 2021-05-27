@@ -166,11 +166,11 @@ const particles_keys = [
 	"RANDOM_SEED",
 ]
 
-var preproc_col = Color(0.631373, 1, 0.878431)
-var keyword_col = Color(1, 0.439216, 0.521569)
-var comment_col = Color(0.8, 0.807843, 0.827451, 0.501961)
-var include_col = Color(1.0, 1.0, 0.7)
-var builtin_include_col = Color("ffc996")
+var preproc_col := Color(0.631373, 1, 0.878431)
+var keyword_col := Color(1, 0.439216, 0.521569)
+var comment_col := Color(0.8, 0.807843, 0.827451, 0.501961)
+var include_col := Color(1.0, 1.0, 0.7)
+var builtin_include_col := Color("ffc996")
 
 var cur_hl_mode = -1
 
@@ -180,7 +180,7 @@ var cur_hl_mode = -1
 func _ready() -> void:
 	reset_highlight_colors()
 
-func reset_highlight_colors():
+func reset_highlight_colors() -> void:
 	clear_colors()
 	for keyword in keywords:
 		add_keyword_color(keyword, keyword_col)
@@ -217,3 +217,5 @@ func set_shader_mode(mode: int):
 			for keyword in particles_keys:
 				add_keyword_color(keyword, keyword_col)
 			cur_hl_mode = mode
+
+

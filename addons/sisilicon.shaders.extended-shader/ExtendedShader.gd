@@ -7,6 +7,8 @@ export var defines := {} setget set_defines
 
 export var raw_code := "" setget set_code, get_raw_code
 
+var functions: Array = []
+
 const ExtendedShaderSingleton = preload(\
 	"res://addons/sisilicon.shaders.extended-shader/ExtendedShaderSingleton.gd")
 
@@ -33,9 +35,17 @@ func set_singleton(sngltn: ExtendedShaderSingleton):
 func set_code(value : String) -> void:
 	raw_code = value
 	update_code()
+	var new_functions := parse_shader_functions()
+	for function_idx in functions.size():
+		var function: Dictionary = functions[function_idx]
+		var nf_idx := new_functions.find(function)
+		if nf_idx > -1:
+			new_functions[nf_idx].priority = function.priority
+	functions = new_functions
 
 func set_code_noprocess(value : String) -> void:
 	raw_code = value
+	functions = parse_shader_functions()
 
 func get_raw_code() -> String:
 	return raw_code
@@ -57,22 +67,42 @@ func update_code() -> void:
 	# disabled because it's unnecessary and makes the raw view less pleasant
 	# result = remove_comments(result)
 	.set_code(result)
-	
-#func get_include_in_line(line: int) -> Dictionary:
-#	var lines : PoolStringArray = raw_code.split("\n")
-#	var result = Dictionary()
-#	var path := get_include_for_line(lines[line])
-#	if path != "":
-#		if not path.get_extension():
-#			path = path + ".extshader"
-#		#if path
-#		var start_idx = (lines[line] as String).find("include")
-#		if not start_idx:
-#			return result
-#		result["path"] = path
-#		result["start_idx"] = start_idx
-#		result["end_idx"] = start_idx + "include".length()
-#	return result
+var shader_func_regex: RegEx
+var argument_regex: RegEx
+func parse_shader_functions() -> Array:
+	if not shader_func_regex or not argument_regex:
+		if not singleton or not singleton.shader_func_regex or not singleton.argument_regex:
+			# can't parse without the regexes, let them finish generating off-thread
+			shader_func_regex = create_reg_exp(
+				"\\s*(?<return>(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool))\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s*\\((?<arguments>[a-zA-Z0-9,_\\s]*?)\\)\\s*?{")
+			argument_regex = create_reg_exp(
+				"(?<type>(?:(?:out|in|inout)\\s+)?(?:(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool)))\\s*(?<name>[a-zA-Z_][a-zA-Z0-9_]*)")
+		else:
+			shader_func_regex = singleton.shader_func_regex
+			argument_regex = singleton.argument_regex
+	var functions: Array
+	var code = self.code # we want fully compiled code for this
+	var Matches = shader_func_regex.search_all(code)
+	for Match in Matches:
+		var function = Dictionary()
+		function["priority"] = 0 # priority increases with usage
+		function["return"] = Match.get_string("return")
+		function["name"] = Match.get_string("name")
+		if (Match.get_string("arguments") as String).length() > 0:
+			var arguments = Match.get_string("arguments").split(",")
+			var parsed_arguments = []
+			for argument in arguments:
+				var ArgMatch = argument_regex.search(argument)
+				if ArgMatch:
+					parsed_arguments.append({
+						"type": ArgMatch.get_string("type"),
+						"name": ArgMatch.get_string("name")
+					})
+				else:
+					emit_signal("error", -1, "Failed to parse arguments for function '" + function["name"] + "'")
+			function["arguments"] = parsed_arguments
+		functions.append(function)
+	return functions
 
 var base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]")
 var builtin_base_include := create_reg_exp("^[\t ]*#[\t ]*include[\t ]+<\"")

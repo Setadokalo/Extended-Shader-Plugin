@@ -1,6 +1,8 @@
 extends Node
 
 func _ready() -> void:
+	preload("res://gsl_tokenizer.gd").new()._ready()
+	get_tree().quit()
 #	print("res://some/random/path/with/file.withextension".get_base_dir())
 	
 	$TextEdit.text = $Sprite.material.shader.get_raw_code()

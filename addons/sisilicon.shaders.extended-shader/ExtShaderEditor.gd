@@ -39,8 +39,6 @@ var singleton := preload("ExtendedShaderSingleton.gd").new()
 
 var flattened_shaders_list := []
 
-var functions := []
-
 var shader_func_regex
 
 var argument_regex
@@ -97,11 +95,7 @@ func _threaded_shaders_init(_userdata):
 	var include : PopupMenu = $Tools/AddInclude.get_popup()
 	var shaders = singleton.get_builtin_shaders()
 	add_shaders_to_popup(include, shaders)
-	shader_func_regex = ExtendedShader.create_reg_exp(
-		"\\s*(?<return>(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool))\\s+(?<name>[a-zA-Z_][a-zA-Z0-9_]*)\\s*\\((?<arguments>[a-zA-Z0-9,_\\s]*?)\\)\\s*?{")
-	argument_regex = ExtendedShader.create_reg_exp(
-		"(?<type>(?:(?:out|in|inout)\\s+)?(?:(?:[biu]?(?:vec|mat)[234])|(?:float)|(?:[biu]?sampler(?:[23]D(?:Array)?|Cube))|(?:u?int)|(?:void)|(?:bool)))\\s*(?<name>[a-zA-Z_][a-zA-Z0-9_]*)"
-	)
+	
 
 var thread
 
@@ -239,7 +233,7 @@ func validate_filename():
 func edit(shader : ExtendedShader, dry_run: bool = false) -> void:
 	if not shader:
 		return
-	shader.singleton = singleton
+	shader.set_singleton(singleton)
 	validate_filename()
 	if raw_view:
 		$Tools/RawView.pressed = false
@@ -273,8 +267,7 @@ func apply_shaders(dry_run: bool = false) -> void:
 			text_edit.set_shader_mode(shader.get_mode())
 			var fn_menu: PopupMenu = $Tools/Functions.get_popup()
 			fn_menu.clear()
-			functions = parse_shader_functions()
-			for function in functions:
+			for function in shader.functions:
 				fn_menu.add_item(function.name)
 		
 		had_focus = true
@@ -312,7 +305,7 @@ func _on_Timer_timeout():
 var firstchar_regex = ExtendedShader.create_reg_exp("^\\s*")
 
 func _on_Functions_item_pressed(ID: int):
-	var fn: Dictionary = functions[ID]
+	var fn: Dictionary = shader.functions[ID]
 	var combined: String = fn.name + "("
 	if fn.has("arguments"):
 		var arguments: Array = fn.arguments
@@ -576,39 +569,9 @@ func _on_RawView_toggled(button_pressed):
 			text_edit.set_line_as_safe(error_line, true)
 
 
-func parse_shader_functions() -> Array:
-	if not shader_func_regex or not argument_regex:
-		# can't parse without the regexes, let them finish generating off-thread
-		return []
-	if not shader:
-		printerr("tried to parse functions with null shader")
-		return []
-	var functions: Array
-	var code = shader.code # we want fully compiled code for this
-	var Matches = shader_func_regex.search_all(code)
-	for Match in Matches:
-		var function = Dictionary()
-		function["return"] = Match.get_string("return")
-		function["name"] = Match.get_string("name")
-		if (Match.get_string("arguments") as String).length() > 0:
-			var arguments = Match.get_string("arguments").split(",")
-			var parsed_arguments = []
-			for argument in arguments:
-				var ArgMatch = argument_regex.search(argument)
-				if ArgMatch:
-					parsed_arguments.append({
-						"type": ArgMatch.get_string("type"),
-						"name": ArgMatch.get_string("name")
-					})
-				else:
-					_on_Shader_error(-1, "Failed to parse arguments for function '" + function["name"] + "'")
-			function["arguments"] = parsed_arguments
-		functions.append(function)
-	return functions
-
 
 func _on_PrintFuncTable_pressed() -> void:
-	print(parse_shader_functions())
+	print(shader.functions if shader else "No Shader loaded in editor!")
 
 var child_has_focus := false
 var child_has_focus_buffer := false
