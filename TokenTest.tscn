@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://gsl_tokenizer.gd" type="Script" id=1]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextEdit" type="TextEdit" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+syntax_highlighting = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+symbol_color = Color( 1, 0.615686, 0.431373, 1 )
+quote_color = Color( 0.996078, 1, 0.615686, 1 )
+bool_color = Color( 1, 0.396078, 0.396078, 1 )
+keyword_token_color = Color( 1, 0.619608, 0.176471, 1 )
+identifier_token_color = Color( 1, 0.976471, 0.423529, 1 )
+number_token_color = Color( 1, 0.6, 0.6, 1 )
+semicolon_token_color = Color( 0.392157, 0.670588, 1, 1 )
+whitespace_token_color = Color( 0.729412, 1, 0.603922, 1 )
+delim_token_color = Color( 0.886275, 0.486275, 1, 1 )
+op_token_color = Color( 0.517647, 0.976471, 1, 1 )
