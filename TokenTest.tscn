@@ -3,11 +3,11 @@
 [ext_resource path="res://TokenizerDemo.gd" type="Script" id=1]
 [ext_resource path="res://BenchProgress.gd" type="Script" id=2]
 
-[sub_resource type="StyleBoxEmpty" id=3]
+[sub_resource type="StyleBoxEmpty" id=1]
 
-[sub_resource type="StyleBoxEmpty" id=4]
+[sub_resource type="StyleBoxEmpty" id=2]
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=3]
 content_margin_left = 5.0
 content_margin_right = 5.0
 bg_color = Color( 0.145098, 0.145098, 0.156863, 1 )
@@ -17,7 +17,7 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 0.423529, 0.423529, 0.423529, 1 )
 
-[sub_resource type="StyleBoxFlat" id=5]
+[sub_resource type="StyleBoxFlat" id=4]
 content_margin_left = 5.0
 content_margin_right = 5.0
 bg_color = Color( 0.0196078, 0.0196078, 0.0196078, 1 )
@@ -27,18 +27,18 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color( 0.423529, 0.423529, 0.423529, 1 )
 
-[sub_resource type="Theme" id=2]
+[sub_resource type="Theme" id=5]
 Button/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
 Button/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
 Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
 Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
 Button/constants/hseparation = 2
 Button/fonts/font = null
-Button/styles/disabled = SubResource( 3 )
-Button/styles/focus = SubResource( 4 )
-Button/styles/hover = SubResource( 1 )
-Button/styles/normal = SubResource( 1 )
-Button/styles/pressed = SubResource( 5 )
+Button/styles/disabled = SubResource( 1 )
+Button/styles/focus = SubResource( 2 )
+Button/styles/hover = SubResource( 3 )
+Button/styles/normal = SubResource( 3 )
+Button/styles/pressed = SubResource( 4 )
 HBoxContainer/constants/separation = 4
 MenuButton/colors/font_color = Color( 0.88, 0.88, 0.88, 1 )
 MenuButton/colors/font_color_disabled = Color( 1, 1, 1, 0.3 )
@@ -66,7 +66,7 @@ ToolButton/styles/pressed = null
 [node name="PanelContainer" type="PanelContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = SubResource( 2 )
+theme = SubResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

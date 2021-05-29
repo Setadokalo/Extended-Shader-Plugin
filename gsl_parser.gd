@@ -173,12 +173,47 @@ func parse_declaration(tokens: Array, start: int, var_table: Dictionary, functio
 	var c_idx = start
 	if not tokens[c_idx] is GslTokens.TypeToken:
 		return Pair.new(error("Attempted to parse typed-declaration with no type!", c_idx), c_idx)
+	var type: String = tokens[c_idx].word
+	c_idx += 1
+	if not tokens[c_idx] is GslTokens.IdentifierToken:
+		return Pair.new(error("Invalid Identifier!", c_idx), c_idx)
+	var ident: String = tokens[c_idx].word
+	c_idx += 1
+	if not tokens[c_idx] is GslTokens.DelimToken \
+			or tokens[c_idx].delimiter != GslTokens.DelimiterType.PAREN \
+			or not tokens[c_idx].opening:
+		return Pair.new(error("Expected '('", c_idx), c_idx)
+	var parameters := []
+	var end_of_params := false
 	
+	c_idx += 1
 	return null
 
-func parse_func(tokens: Array, start: int, return_type: String, var_table: Dictionary, function_table: Dictionary) -> Pair:
-	printerr("function parsing unimplemented")
-	return null
+func parse_func(
+		tokens: Array, 
+		start: int, 
+		return_type: String, 
+		var_table: Dictionary, 
+		function_table: Dictionary) -> Pair:
+	printerr("function parsing is weak")
+	var nest_level := 1
+	var c_idx := start
+	var function_tokens := []
+	while c_idx < tokens.size():
+		var token: GslTokens.Token = tokens[c_idx]
+		if token is GslTokens.DelimToken:
+			if token.delimiter == GslTokens.DelimiterType.CURLY:
+				if token.opening:
+					nest_level += 1
+				else:
+					nest_level -= 1
+					# nest level 1 means we are in the function scope
+					# level 0 means we have left the function
+					if nest_level == 0:
+						break
+		function_tokens.append(token)
+		c_idx += 1
+	return Pair.new(function_tokens, c_idx + 1)
 
 static func get_shader_type(s: String) -> int:
 	match s:

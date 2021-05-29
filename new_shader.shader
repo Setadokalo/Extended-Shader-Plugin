@@ -1,7 +1,7 @@
 shader_type canvas_item;
 
 
-uniform vec3 pos;
+vec3 pos = vec3(1.0);
 
 
 void fragment() {
