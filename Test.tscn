@@ -179,8 +179,8 @@ script = ExtResource( 6 )
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 6 )
-position = Vector2( 512, 508 )
-scale = Vector2( 2.70382, 2.70382 )
+position = Vector2( 512, 488 )
+scale = Vector2( 3, 3 )
 texture = ExtResource( 4 )
 region_rect = Rect2( 0, 0, 64, 64 )
 
