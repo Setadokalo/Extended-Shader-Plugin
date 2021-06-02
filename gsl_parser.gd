@@ -86,11 +86,13 @@ func parse(tokens: Array):
 					c_idx += 1
 				c_idx += 1
 				parsed_token = true
-		elif token is GslTokens.TypeToken or token is GslTokens.TypeToken:
+		elif token is GslTokens.TypeToken:
+			print("type token found")
 			var result := parse_declaration(tokens, c_idx, var_table, function_table)
 			if result.one is Dictionary:
 				return result.one
 			#TODO: store result of parse_declaration
+			parsed_token = true
 			c_idx = result.two
 
 		if shader_type == -1:
@@ -173,7 +175,7 @@ func parse_declaration(tokens: Array, start: int, var_table: Dictionary, functio
 	var c_idx = start
 	if not tokens[c_idx] is GslTokens.TypeToken:
 		return Pair.new(error("Attempted to parse typed-declaration with no type!", c_idx), c_idx)
-	var type: String = tokens[c_idx].word
+	var return_type: String = tokens[c_idx].word
 	c_idx += 1
 	if not tokens[c_idx] is GslTokens.IdentifierToken:
 		return Pair.new(error("Invalid Identifier!", c_idx), c_idx)
@@ -183,11 +185,29 @@ func parse_declaration(tokens: Array, start: int, var_table: Dictionary, functio
 			or tokens[c_idx].delimiter != GslTokens.DelimiterType.PAREN \
 			or not tokens[c_idx].opening:
 		return Pair.new(error("Expected '('", c_idx), c_idx)
+	c_idx += 1
 	var parameters := []
 	var end_of_params := false
 	
+	while not end_of_params:
+		if not tokens[c_idx] is GslTokens.TypeToken:
+			return Pair.new(error("Parameter missing type!", c_idx), c_idx)
+		var param_type: String = tokens[c_idx].word
+		c_idx += 1
+		if not tokens[c_idx] is GslTokens.IdentifierToken:
+			return Pair.new(error("Invalid Identifier!", c_idx), c_idx)
+		parameters.append({"type": param_type, "name": tokens[c_idx]})
+		c_idx += 1
+		if tokens[c_idx] is GslTokens.DelimToken:
+			if not tokens[c_idx].delimiter == GslTokens.DelimiterType.PAREN or tokens[c_idx].opening:
+				return Pair.new(error("Unexpected token!", c_idx), c_idx)
+			end_of_params = true
+		elif not tokens[c_idx] is GslTokens.CommaToken:
+			return Pair.new(error("Unexpected token!", c_idx), c_idx)
+	
 	c_idx += 1
-	return null
+	return Pair.new(null, c_idx)
+
 
 func parse_func(
 		tokens: Array, 

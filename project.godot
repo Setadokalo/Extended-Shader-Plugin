@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "TextEdit",
+"class": "AdvancedTextEdit",
+"language": "GDScript",
+"path": "res://AdvancedTextEdit.gd"
+}, {
 "base": "EditorProperty",
 "class": "InspectorDefineEditor",
 "language": "GDScript",
@@ -35,6 +40,7 @@ _global_script_classes=[ {
 "path": "res://addons/sisilicon.shaders.extended-shader/inspector_plugin/ShaderInspectorInjectPlugin.gd"
 } ]
 _global_script_class_icons={
+"AdvancedTextEdit": "",
 "InspectorDefineEditor": "",
 "LibFuncs": "",
 "ResourceLoaderExtShader": "",

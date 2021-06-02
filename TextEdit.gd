@@ -1,4 +1,4 @@
-extends "res://addons/sisilicon.shaders.extended-shader/ExtShaderTextEditor.gd"
+extends AdvancedTextEdit
 
 var BUILTIN_FUNCTIONS = [
 	{"return": "vec_type", "name": "radians", "arguments": [{"type": "vec_type", "name": "degrees"}], "priority": 0},
@@ -351,47 +351,246 @@ var BUILTIN_FUNCTIONS = [
 	], "priority": 0},
 ]
 
+const keywords = [
+	"true",
+	"false",
+	"void",
+	"bool",
+	"bvec2",
+	"bvec3",
+	"bvec4",
+	"int",
+	"ivec2",
+	"ivec3",
+	"ivec4",
+	"uint",
+	"uvec2",
+	"uvec3",
+	"uvec4",
+	"float",
+	"vec2",
+	"vec3",
+	"vec4",
+	"mat2",
+	"mat3",
+	"mat4",
+	"sampler2D",
+	"isampler2D",
+	"usampler2D",
+	"sampler2DArray",
+	"isampler2DArray",
+	"usampler2DArray",
+	"sampler3D",
+	"isampler3D",
+	"usampler3D",
+	"samplerCube",
+	"samplerExternalOES",
+	"flat",
+	"smooth",
+	"const",
+	"lowp",
+	"mediump",
+	"highp",
+	"if",
+	"else",
+	"for",
+	"while",
+	"do",
+	"switch",
+	"case",
+	"default",
+	"break",
+	"continue",
+	"return",
+	"discard",
+	"uniform",
+	"varying",
+	"in",
+	"out",
+	"inout",
+	"render_mode",
+	"hint_white",
+	"hint_black",
+	"hint_normal",
+	"hint_aniso",
+	"hint_albedo",
+	"hint_black_albedo",
+	"hint_color",
+	"hint_range",
+	"shader_type",
+	"NULL"
+]
+
+const ci_keys = [
+	"TIME",
+	"WORLD_MATRIX",
+	"EXTRA_MATRIX",
+	"PROJECTION_MATRIX",
+	"INSTANCE_CUSTOM",
+	"AT_LIGHT_PASS",
+	"VERTEX",
+	"TEXTURE_PIXEL_SIZE",
+	"UV",
+	"COLOR",
+	"MODULATE",
+	"POINT_SIZE",
+	"FRAGCOORD",
+	"NORMAL",
+	"NORMALMAP",
+	"NORMALMAP_DEPTH",
+	"TEXTURE",
+	"NORMAL_TEXTURE",
+	"SCREEN_UV",
+	"SCREEN_PIXEL_SIZE",
+	"POINT_COORD",
+	"SCREEN_TEXTURE",
+]
+const spatial_keys = [
+	"VIEWPORT_SIZE",
+	"WORLD_MATRIX",
+	"INV_CAMERA_MATRIX",
+	"PROJECTION_MATRIX",
+	"CAMERA_MATRIX",
+	"MODELVIEW_MATRIX",
+	"INV_PROJECTION_MATRIX",
+	"VERTEX",
+	"POSITION",
+	"NORMAL",
+	"TANGENT",
+	"BINORMAL",
+	"ROUGHNESS",
+	"UV",
+	"UV2",
+	"OUTPUT_IS_SRGB",
+	"COLOR",
+	"POINT_SIZE",
+	"INSTANCE_ID",
+	"INSTANCE_CUSTOM",
+	"FRAGCOORD",
+	"VIEW",
+	"FRONT_FACING",
+	"NORMALMAP",
+	"NORMALMAP_DEPTH",
+	"ALBEDO",
+	"ALPHA",
+	"ALPHA_SCISSOR",
+	"METALLIC",
+	"SPECULAR",
+	"RIM",
+	"RIM_TINT",
+	"CLEARCOAT",
+	"CLEARCOAT_GLOSS",
+	"ANISOTROPY",
+	"ANISOTROPY_FLOW",
+	"SSS_STRENGTH",
+	"TRANSMISSION",
+	"EMISSION",
+	"AO",
+	"AO_LIGHT_AFFECT",
+	"SCREEN_TEXTURE",
+	"DEPTH_TEXTURE",
+	"DEPTH",
+	"SCREEN_UV",
+	"POINT_COORD",
+	"TIME",
+	"LIGHT",
+	"ATTENUATION",
+	"LIGHT_COLOR",
+	"DIFFUSE_LIGHT",
+	"SPECULAR_LIGHT",
+]
+const particles_keys = [
+	"TIME",
+	"COLOR",
+	"VELOCITY",
+	"MASS",
+	"ACTIVE",
+	"RESTART",
+	"CUSTOM",
+	"TRANSFORM",
+	"LIFETIME",
+	"DELTA",
+	"NUMBER",
+	"INDEX",
+	"EMISSION_TRANSFORM",
+	"RANDOM_SEED",
+]
+
+var preproc_col := Color(0.631373, 1, 0.878431)
+var keyword_col := Color(1, 0.439216, 0.521569)
+var comment_col := Color(0.8, 0.807843, 0.827451, 0.501961)
+var include_col := Color(1.0, 1.0, 0.7)
+var builtin_include_col := Color("ffc996")
+
+var cur_hl_mode = -1
+
+func reset_highlight_colors() -> void:
+	clear_colors()
+	for keyword in keywords:
+		add_keyword_color(keyword, keyword_col)
+	add_color_region("/*", "*/",  comment_col)
+	add_color_region("//", "",    comment_col)
+	add_color_region("\"", "\"",  include_col)
+	add_color_region("<\"", ">",  builtin_include_col)
+	add_color_region("/!!!!", "!!!!/", Color(1.0, 0.3, 0.3))
+	add_keyword_color("define", preproc_col)
+	add_keyword_color("undef", preproc_col)
+	add_keyword_color("include", preproc_col)
+	add_keyword_color("ifdef", preproc_col)
+	add_keyword_color("ifndef", preproc_col)
+	add_keyword_color("if", preproc_col)
+	add_keyword_color("elif", preproc_col)
+	add_keyword_color("else", preproc_col)
+	add_keyword_color("endif", preproc_col)
+
+func set_shader_mode(mode: int):
+	# as an improvement over the default shader editor,
+	# we only highlight keywords for the current shader type
+	if mode != cur_hl_mode:
+		reset_highlight_colors()
+		if mode == Shader.MODE_CANVAS_ITEM:
+			for keyword in ci_keys:
+				add_keyword_color(keyword, keyword_col)
+			cur_hl_mode = mode
+		elif mode == Shader.MODE_SPATIAL:
+			for keyword in spatial_keys:
+				add_keyword_color(keyword, keyword_col)
+			cur_hl_mode = mode
+		elif mode == Shader.MODE_PARTICLES:
+			for keyword in particles_keys:
+				add_keyword_color(keyword, keyword_col)
+			cur_hl_mode = mode
+
+
+
+export var sprite_path: NodePath
+var sprite: Sprite
+
+func _ready() -> void:
+	._ready()
+	reset_highlight_colors()
+	sprite = get_node(sprite_path)
+
 class DictionarySorter:
 	func sort_dictionaries(a, b) -> bool:
 		if a.priority != b.priority:
 			return a.priority >= b.priority
 		return (a.name as String).casecmp_to(b.name as String) >= 0
 
-var mouse_over := false
-var clicked_this_frame := false
-
-func _process(delta: float) -> void:
-	clicked_this_frame = false
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		var me := event as InputEventMouseButton
-		if me.button_index == BUTTON_LEFT and me.pressed:
-			clicked_this_frame = true
-	if event is InputEventMouseMotion:
-		var mpos = get_local_mouse_position()
-		if ($PopupPanel.rect_position - mpos).length() > 10:
-			if $PopupPanel.rect_position > mpos or $PopupPanel.rect_size < mpos - $PopupPanel.rect_position:
-				$PopupPanel.hide()
-		if mouse_over and not $PopupPanel.visible:
-			$HoverTimer.start()
-		else:
-			$HoverTimer.stop()
-
 const ExtendedShaderSingleton = preload("res://addons/sisilicon.shaders.extended-shader/ExtendedShaderSingleton.gd")
 
 var word_char_regex = ExtendedShaderSingleton.create_reg_exp("^[a-zA-Z0-9_]$")
-var word_regex = ExtendedShaderSingleton.create_reg_exp("^[a-zA-Z_][a-zA-Z0-9_]*$")
 
 func is_word_character(c: String) -> bool:
 	return word_char_regex.search(c)
 
+var word_regex = ExtendedShaderSingleton.create_reg_exp("^[a-zA-Z_][a-zA-Z0-9_]*$")
+
 func is_function_name(s: String) -> bool:
 	return word_regex.search(s)
 
-func _on_HoverTimer_timeout() -> void:
-	#get_text_pos_at(get_local_mouse_position())
-	var mpos = get_text_pos_at(get_local_mouse_position())
+func _get_popup_text(mouse_pos: Vector2) -> String:
+	var mpos = get_text_pos_at(mouse_pos)
 	var line = get_line(mpos[0])
 	var look_at_pos = mpos[1]
 	while look_at_pos >= 0 and look_at_pos < line.length() and is_word_character(line[look_at_pos]):
@@ -403,18 +602,19 @@ func _on_HoverTimer_timeout() -> void:
 	var word_end = look_at_pos
 	var word = line.substr(word_start, word_end - word_start)
 	if is_function_name(word):
-		var funcs: Array = $"../Sprite".material.shader.functions
+		var funcs: Array = sprite.material.shader.functions
 		var results = find_function(funcs, word)
 		if results == []:
 			results = find_function(BUILTIN_FUNCTIONS, word)
 		if results == []:
-			return
+			return ""
 		var txt = ""
 		for result in results:
 			txt += result + "\n"
 		txt = txt.trim_suffix("\n")
-		$PopupPanel/Label.set_text(txt)
-		$PopupPanel.popup(Rect2(get_viewport().get_mouse_position() + Vector2(1, 1), Vector2(2, 2)))
+		return txt
+	return ""
+
 
 func find_function(funcs: Array, word: String) -> Array:
 	var found := []
@@ -433,70 +633,19 @@ func find_function(funcs: Array, word: String) -> Array:
 			found.push_back(txt)
 	return found
 
-func _on_mouse_entered() -> void:
-	mouse_over = true
-
-
-func _on_mouse_exited() -> void:
-	mouse_over = false
-
-func pos_at_mouse():
-	get_text_pos_at(get_local_mouse_position())
-
-func get_row_height():
-	var line_spacing = get("custom_constants/line_spacing")
-	if not typeof(line_spacing) == TYPE_INT:
-		line_spacing = get_constant("line_spacing", "TextEdit")
-	return get_font("font").get_height() + line_spacing
-
-# Assumes we're using a monospace font
-func get_char_width(c: String):
-	assert(c.length() == 1)
-	return get_font("font").get_char_size(c.ord_at(0)).x
-
-func get_gutter_width():
-	var width = 0
-	if show_line_numbers:
-		width += get_char_width('2') * (log(get_line_count() as float) as int + 1)
-	if breakpoint_gutter:
-		width += 10
-	if fold_gutter:
-		width += 10
-	return width
-
-func get_text_pos_at(p_mouse: Vector2):
-	var text_height = get_row_height()
-	var guessed_line = int(scroll_vertical + p_mouse.y / text_height)
-	if get_line_count() - 1 < guessed_line:
-		guessed_line = get_line_count() - 1
-	else:
-		var line_idx = 0
-		while line_idx <= guessed_line:
-			if is_line_hidden(line_idx):
-				guessed_line = min(guessed_line + 1, get_line_count() - 1)
-			line_idx += 1
-	var guessed_row = -1
-	var line = get_line(guessed_line)
-	var total_width = get_gutter_width()
-	for c_idx in line.length():
-		var width = get_char_width(line[c_idx])
-		if line[c_idx] == "\t":
-			width = get_char_width(" ") * 4
-		if total_width + width > p_mouse.x:
-			if total_width + (width / 2) > p_mouse.x:
-				guessed_row = c_idx
-			else:
-				guessed_row = c_idx + 1
-			break
-		total_width += width
-	if guessed_row == -1:
-		guessed_row = line.length()
-	guessed_row = min(guessed_row, get_line(guessed_line).length())
-	return [guessed_line, guessed_row]
-
-
 func _on_TextEdit_cursor_changed() -> void:
 	if clicked_this_frame:
 		var pos = get_text_pos_at(get_local_mouse_position())
-		if pos[0] != cursor_get_line() or pos[1] != cursor_get_column():
-			printerr("positions did not match!")
+		if pos[0] != cursor_get_line() or pos[1] != cursor_get_column() and not is_selection_active():
+			printerr("positions did not match! mousepos returned (%d, %d) but cursor pos is (%d, %d)"\
+					 % [pos[0], pos[1], cursor_get_line(), cursor_get_column()])
+		
+		var eline := randi() % get_line_count()
+		var ecol := 0
+		var elen := 0
+		while get_line(eline).length() == 0:
+			eline = randi() % get_line_count()
+		ecol = randi() % get_line(eline).length()
+		elen = randi() % (get_line(eline).length() - ecol)
+		hl_error(eline, ecol, elen)
+		

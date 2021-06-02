@@ -15,7 +15,7 @@ var fs: EditorFileSystem
 const ExtendedShader = preload("ExtendedShader.gd")
 
 
-onready var text_edit := $TextEdit as TextEdit
+onready var text_edit := $TextEdit as AdvancedTextEdit
 
 var had_focus := false
 var shader : ExtendedShader
@@ -91,78 +91,81 @@ func add_shaders_to_popup_threadsafe(popup: PopupMenu, shaders: Array, path: Str
 	return popup
 
 func _threaded_shaders_init(_userdata):
-	
 	var include : PopupMenu = $Tools/AddInclude.get_popup()
+	include.clear()
 	var shaders = singleton.get_builtin_shaders()
-	add_shaders_to_popup(include, shaders)
-	
+	add_shaders_to_popup_threadsafe(include, shaders)
 
 var thread
 
 var menu_buttons := []
 
+var has_readied = false
+
 func _ready() -> void:
-	error_lbl_regex.compile("^error\\((.+?)\\): (.*)$")
-	menu_buttons = [
-		$Tools/Search,
-		$Tools/Edit,
-		$Tools/GoTo,
-		$Tools/Help,
-		$Tools/Functions
-	]
-	var search: PopupMenu = $Tools/Search.get_popup()
-	var edit: PopupMenu = $Tools/Edit.get_popup()
-	var goto: PopupMenu = $Tools/GoTo.get_popup()
-	var help: PopupMenu = $Tools/Help.get_popup()
-	var functions : PopupMenu = $Tools/Functions.get_popup()
-	thread = Thread.new()
-	thread.start(self, "_threaded_shaders_init")
-#	help.set_item_icon(help.get_item_index(ONLINE_DOCS),
-#		get_icon("Instance"))
+	if not has_readied:
+		has_readied = true
+		error_lbl_regex.compile("^error\\((.+?)\\): (.*)$")
+		menu_buttons = [
+			$Tools/Search,
+			$Tools/Edit,
+			$Tools/GoTo,
+			$Tools/Help,
+			$Tools/Functions
+		]
+		var search: PopupMenu = $Tools/Search.get_popup()
+		var edit: PopupMenu = $Tools/Edit.get_popup()
+		var goto: PopupMenu = $Tools/GoTo.get_popup()
+		var help: PopupMenu = $Tools/Help.get_popup()
+		var functions : PopupMenu = $Tools/Functions.get_popup()
+		thread = Thread.new()
+		thread.start(self, "_threaded_shaders_init")
+	#	help.set_item_icon(help.get_item_index(ONLINE_DOCS),
+	#		get_icon("Instance"))
+			
 		
-	
-	search.connect(  "id_pressed",  self, "_on_Menu_item_pressed")
-	edit.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
-	goto.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
-	help.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
-	functions.connect("id_pressed", self, "_on_Functions_item_pressed")
-	
-	search.connect(  "focus_entered",  self, "_on_child_focus_gained")
-	edit.connect(    "focus_entered",  self, "_on_child_focus_gained")
-	goto.connect(    "focus_entered",  self, "_on_child_focus_gained")
-	help.connect(    "focus_entered",  self, "_on_child_focus_gained")
-	functions.connect("focus_entered", self, "_on_child_focus_gained")
-	
-	search.connect(  "focus_exited",  self, "_on_child_focus_lost")
-	edit.connect(    "focus_exited",  self, "_on_child_focus_lost")
-	goto.connect(    "focus_exited",  self, "_on_child_focus_lost")
-	help.connect(    "focus_exited",  self, "_on_child_focus_lost")
-	functions.connect("focus_exited", self, "_on_child_focus_lost")
-	
-	search.set_item_shortcut(search.get_item_index(FIND), shortcut(KEY_F, true, false, false))
-	search.set_item_shortcut(search.get_item_index(FIND_NEXT), shortcut(KEY_F3, false, false, false))
-	search.set_item_shortcut(search.get_item_index(FIND_PREVIOUS), shortcut(KEY_F3, false, true, false))
-	search.set_item_shortcut(search.get_item_index(REPLACE), shortcut(KEY_R, true, false, false))
-	search.set_item_shortcut(search.get_item_index(GOTO_LINE), shortcut(KEY_L, true, false, false))
+		search.connect(  "id_pressed",  self, "_on_Menu_item_pressed")
+		edit.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
+		goto.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
+		help.connect(    "id_pressed",  self, "_on_Menu_item_pressed")
+		functions.connect("id_pressed", self, "_on_Functions_item_pressed")
+		
+		search.connect(  "focus_entered",  self, "_on_child_focus_gained")
+		edit.connect(    "focus_entered",  self, "_on_child_focus_gained")
+		goto.connect(    "focus_entered",  self, "_on_child_focus_gained")
+		help.connect(    "focus_entered",  self, "_on_child_focus_gained")
+		functions.connect("focus_entered", self, "_on_child_focus_gained")
+		
+		search.connect(  "focus_exited",  self, "_on_child_focus_lost")
+		edit.connect(    "focus_exited",  self, "_on_child_focus_lost")
+		goto.connect(    "focus_exited",  self, "_on_child_focus_lost")
+		help.connect(    "focus_exited",  self, "_on_child_focus_lost")
+		functions.connect("focus_exited", self, "_on_child_focus_lost")
+		
+		search.set_item_shortcut(search.get_item_index(FIND), shortcut(KEY_F, true, false, false))
+		search.set_item_shortcut(search.get_item_index(FIND_NEXT), shortcut(KEY_F3, false, false, false))
+		search.set_item_shortcut(search.get_item_index(FIND_PREVIOUS), shortcut(KEY_F3, false, true, false))
+		search.set_item_shortcut(search.get_item_index(REPLACE), shortcut(KEY_R, true, false, false))
+		search.set_item_shortcut(search.get_item_index(GOTO_LINE), shortcut(KEY_L, true, false, false))
 
-	edit.set_item_shortcut(edit.get_item_index(UNDO), shortcut(KEY_Z, true, false, false))
-	edit.set_item_shortcut(edit.get_item_index(REDO), shortcut(KEY_Y, true, false, false))
-	edit.set_item_shortcut(edit.get_item_index(CUT), shortcut(KEY_X, true, false, false))
-	edit.set_item_shortcut(edit.get_item_index(COPY), shortcut(KEY_C, true, false, false))
-	edit.set_item_shortcut(edit.get_item_index(PASTE), shortcut(KEY_V, true, false, false))
-	edit.set_item_shortcut(edit.get_item_index(SELECT_ALL), shortcut(KEY_A, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(UNDO), shortcut(KEY_Z, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(REDO), shortcut(KEY_Y, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(CUT), shortcut(KEY_X, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(COPY), shortcut(KEY_C, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(PASTE), shortcut(KEY_V, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(SELECT_ALL), shortcut(KEY_A, true, false, false))
 
-	edit.set_item_shortcut(edit.get_item_index(MOVE_UP), shortcut(KEY_UP, false, false, true))
-	edit.set_item_shortcut(edit.get_item_index(MOVE_DOWN), shortcut(KEY_DOWN, false, false, true))
-	edit.set_item_shortcut(edit.get_item_index(DELETE_LINE), shortcut(KEY_K, true, true, false))
-	edit.set_item_shortcut(edit.get_item_index(TOGGLE_COMMENT), shortcut(KEY_K, true, false, false))
-	edit.set_item_shortcut(edit.get_item_index(CLONE_DOWN), shortcut(KEY_B, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(MOVE_UP), shortcut(KEY_UP, false, false, true))
+		edit.set_item_shortcut(edit.get_item_index(MOVE_DOWN), shortcut(KEY_DOWN, false, false, true))
+		edit.set_item_shortcut(edit.get_item_index(DELETE_LINE), shortcut(KEY_K, true, true, false))
+		edit.set_item_shortcut(edit.get_item_index(TOGGLE_COMMENT), shortcut(KEY_K, true, false, false))
+		edit.set_item_shortcut(edit.get_item_index(CLONE_DOWN), shortcut(KEY_B, true, false, false))
 
-	edit.set_item_shortcut(edit.get_item_index(COMPLETE_SYMBOL), shortcut(KEY_SPACE, true, false, false))
-	
-	yield(get_tree(), "idle_frame")
-	get_tree().root.add_child(singleton)
-	
+		edit.set_item_shortcut(edit.get_item_index(COMPLETE_SYMBOL), shortcut(KEY_SPACE, true, false, false))
+		
+		yield(get_tree(), "idle_frame")
+		get_tree().root.add_child(singleton)
+		
 	edit(shader, true)
 
 func _on_Include_item_pressed(ID : int) -> void:
@@ -171,9 +174,9 @@ func _on_Include_item_pressed(ID : int) -> void:
 	text_edit.cursor_set_line(line_idx + 1)
 	
 func parse_settings(settings: EditorSettings):
-	print(settings.get_setting("text_editor/highlighting/background_color"))
-	text_edit.add_color_override("background_color", settings.get_setting("text_editor/highlighting/background_color"))
-	text_edit.add_color_override("completion_background_color", settings.get_setting("text_editor/highlighting/completion_background_color"))
+	#print(settings.get_setting("text_editor/highlighting/background_color"))
+	text_edit.set_background(settings.get_setting("text_editor/highlighting/background_color"))
+#	text_edit.add_color_override("completion_background_color", settings.get_setting("text_editor/highlighting/completion_background_color"))
 	text_edit.add_color_override("completion_selected_color", settings.get_setting("text_editor/highlighting/completion_selected_color"))
 	text_edit.add_color_override("completion_existing_color", settings.get_setting("text_editor/highlighting/completion_existing_color"))
 	text_edit.add_color_override("completion_scroll_color", settings.get_setting("text_editor/highlighting/completion_scroll_color"))
@@ -184,7 +187,7 @@ func parse_settings(settings: EditorSettings):
 	text_edit.add_color_override("font_color_readonly", readonly_col)
 	text_edit.add_color_override("line_number_color", settings.get_setting("text_editor/highlighting/line_number_color"))
 	text_edit.add_color_override("caret_color", settings.get_setting("text_editor/highlighting/caret_color"))
-	text_edit.add_color_override("caret_background_color", settings.get_setting("text_editor/highlighting/caret_background_color"))
+#	text_edit.add_color_override("caret_background_color", settings.get_setting("text_editor/highlighting/caret_background_color"))
 	text_edit.add_color_override("text_selected_color", settings.get_setting("text_editor/highlighting/text_selected_color"))
 	text_edit.add_color_override("selection_color", settings.get_setting("text_editor/highlighting/selection_color"))
 	text_edit.add_color_override("brace_mismatch_color", settings.get_setting("text_editor/highlighting/brace_mismatch_color"))
@@ -241,6 +244,7 @@ func edit(shader : ExtendedShader, dry_run: bool = false) -> void:
 		if not shader_timer.is_connected("timeout", self, "_on_PollForErrors_timeout"):
 			shader_timer.connect("timeout", self, "_on_PollForErrors_timeout")
 		self.shader = shader
+		text_edit.shader = shader
 		if not shader.is_connected("error", self, "_on_Shader_error"):
 			shader.connect("error", self, "_on_Shader_error")
 		if not shader.is_connected("error", self, "_on_Preproc_error"):
@@ -462,7 +466,7 @@ func _on_Menu_item_pressed(ID : int) -> void:
 			OS.shell_open("https://github.com/Setadokalo/Extended-Shader-Plugin")
 		
 		_:
-			_on_Shader_error(-1, "Sorry! This feature is currently unsupported. :(")
+			_on_Shader_error(-1, "Sorry! This feature is currently unsupported. :(", Color(1.0, 0.8, 0.2))
 			printerr("Sorry! This feature is currently unsupported. :(")
 
 
@@ -484,15 +488,14 @@ func _on_CloseSearchButton_pressed() -> void:
 
 func _on_Next_pressed() -> void:
 	find_and_select(get_flags_for_search())
+
 func _on_Previous_pressed() -> void:
 	find_and_select(get_flags_for_search() + TextEdit.SEARCH_BACKWARDS)
-
 
 var old_text := ""
 
 func _on_Find_text_changed(new_text: String) -> void:
 	$SearchBar/SearchField/Find/Timer2.start()
-
 
 func _on_Find_Field_timeout() -> void:
 	var text = $SearchBar/SearchField/Find.text
@@ -513,17 +516,13 @@ func _on_Find_Field_timeout() -> void:
 	
 	old_text = text
 
-
-
 func _on_Goto_Ok_pressed() -> void:
 	$"../Goto/GotoLineDialog".hide()
 	var line = int($"../Goto/GotoLineDialog/LineBox/Line".text)
 	$TextEdit.cursor_set_line(line - 1)
 
-
 func _on_Goto_Cancel_pressed() -> void:
 	$"../Goto/GotoLineDialog".hide()
-
 
 func _on_PollForErrors_timeout():
 	shader_timer.wait_time = 2.0
@@ -543,16 +542,22 @@ func _on_PollForErrors_timeout():
 
 var error_line: int = -1
 
-func _on_Shader_error(line: int, error_msg: String):
+func _on_Shader_error(line: int, error_msg: String, custom_color := Color(1, 0.470588, 0.419608)):
+	
 	self.error_msg = error_msg
 	if error_line != -1 and raw_view:
 		text_edit.set_line_as_safe(error_line, false)
+	$InfoBar/ErrorBar.add_color_override("font_color", custom_color)
 	if line != -1:
 		if raw_view:
+			text_edit.hl_error(line - 1, 0, 0)
 			text_edit.set_line_as_safe(line - 1, true)
+		else:
+			text_edit.clear_error()
 		error_line = line - 1
 		$InfoBar/ErrorBar.text = "error(%d): %s" % [line, error_msg]
 	else:
+		text_edit.clear_error()
 		error_line = -1
 		$InfoBar/ErrorBar.text = "error: %s" % error_msg
 
@@ -560,18 +565,25 @@ func _on_RawView_toggled(button_pressed):
 	raw_view = button_pressed
 	text_edit.readonly = button_pressed
 	if not button_pressed:
+		text_edit.clear_error()
 		text_edit.text = shader.raw_code
 	else:
 		# Raw view mode - show error lint
 		text_edit.text = shader.code
 		if error_line != -1:
+			print("showing error")
+			text_edit.hl_error(error_line, 0, 0)
 			text_edit.set_line(error_line, text_edit.get_line(error_line) + " /!!!! ERROR: " + error_msg + " !!!!/")
 			text_edit.set_line_as_safe(error_line, true)
 
 
 
 func _on_PrintFuncTable_pressed() -> void:
-	print(shader.functions if shader else "No Shader loaded in editor!")
+	if shader:
+		print(shader.functions)
+		_on_Shader_error(-1, "Function Table Printed to Output", Color(1.0, 1.0, 1.0))
+	else:
+		_on_Shader_error(-1, "No Shader loaded in editor!")
 
 var child_has_focus := false
 var child_has_focus_buffer := false

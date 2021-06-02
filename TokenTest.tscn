@@ -134,7 +134,15 @@ margin_right = 1010.0
 margin_bottom = 586.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+text = "Some
+Wordy
+Text
+Yadadadada
+Yadayadayada
+Et cetera"
 syntax_highlighting = true
+show_line_numbers = true
+breakpoint_gutter = true
 smooth_scrolling = true
 v_scroll_speed = 150.0
 script = ExtResource( 1 )
@@ -170,6 +178,18 @@ margin_bottom = 37.0
 window_title = "Benchmark Results"
 dialog_text = "Took 0.000000 Seconds on average
 (+/- 0.00000s min/max)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="VBoxContainer/TextEdit"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -200.0
+margin_bottom = -184.0
+grow_vertical = 2
+color = Color( 1, 0.380392, 0.380392, 0.368627 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

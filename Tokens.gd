@@ -115,51 +115,58 @@ class Token:
 				debug_str += c
 		return debug_str + "\""
 
-class KeywordToken extends Token:
+class WordToken extends Token:
 	var word: String
 	func _init(chars: String, ws: String).(TokenType.KEYWORD, ws) -> void:
 		word = chars
 		
 	func _to_string() -> String:
+		return "WordToken{\"" + word + "\", " + ws_to_string() + "}"
+
+class KeywordToken extends WordToken:
+	func _init(chars: String, ws: String).(chars, ws) -> void:
+		pass
+		
+	func _to_string() -> String:
 		return "KeywordToken{\"" + word + "\", " + ws_to_string() + "}"
 
-class KeywordValueToken extends KeywordToken:
+class KeywordValueToken extends WordToken:
 	func _init(chars: String, ws: String).(chars, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "KeywordValueToken{\"" + word + "\", " + ws_to_string() + "}"
 
-class EditorHintToken extends KeywordToken:
+class EditorHintToken extends WordToken:
 	func _init(chars: String, ws: String).(chars, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "EditorHintToken{\"" + word + "\", " + ws_to_string() + "}"
 
-class TypeToken extends KeywordToken:
+class TypeToken extends WordToken:
 	func _init(chars: String, ws: String).(chars, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "TypeToken{\"" + word + "\", " + ws_to_string() + "}"
 
-class ScopeToken extends KeywordToken:
+class ScopeToken extends WordToken:
 	func _init(chars: String, ws: String).(chars, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "ScopeToken{\"" + word + "\", " + ws_to_string() + "}"
 
-class InterpolationToken extends KeywordToken:
+class InterpolationToken extends WordToken:
 	func _init(chars: String, ws: String).(chars, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "InterpolationToken{\"" + word + "\", " + ws_to_string() + "}"
 
-class ArgQualifierToken extends KeywordToken:
+class ArgQualifierToken extends WordToken:
 	func _init(chars: String, ws: String).(chars, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "ArgQualifierToken{\"" + word + "\", " + ws_to_string() + "}"
 
-class TypePrecisionToken extends KeywordToken:
+class TypePrecisionToken extends WordToken:
 	func _init(chars: String, ws: String).(chars, ws) -> void:
 		pass
 	func _to_string() -> String:

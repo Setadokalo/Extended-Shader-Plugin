@@ -17,3 +17,8 @@ static func create_reg_exp(string : String) -> RegEx:
 		printerr("'" + string + "' is not a valid regular expression!")
 	
 	return reg_exp
+
+
+# Godot... why the fuck are you like this
+static func log_b(val: float, base: float = 2) -> float:
+	return log(val) / log(base)
