@@ -66,6 +66,10 @@ font_data = ExtResource( 3 )
 
 [sub_resource type="ShaderMaterial" id=9]
 shader = ExtResource( 2 )
+shader_param/cellular2d_jitter = null
+shader_param/cellular_2x2_jitter = null
+shader_param/cellular_2x2x2_jitter = null
+shader_param/cellular_3d_jitter = null
 
 [node name="Panel" type="Panel"]
 anchor_right = 1.0

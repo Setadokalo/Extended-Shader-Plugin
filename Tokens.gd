@@ -1,3 +1,4 @@
+# warning-ignore:shadowed_variable
 extends Object
 
 
@@ -44,6 +45,8 @@ enum Operator {
 	XOR,      # ^
 	BAND,     # &
 	BOR,      # |
+	
+	TERN,     # ?
 }
 
 static func get_op_length(op: int) -> int:
@@ -62,6 +65,7 @@ static func get_op_length(op: int) -> int:
 		Operator.BOR: return 1
 		Operator.LESS: return 1
 		Operator.GRTR: return 1
+		Operator.TERN: return 1
 		
 		Operator.BSHIFTL: return 2
 		Operator.BSHIFTR: return 2
@@ -81,23 +85,28 @@ enum DelimiterType {
 	PAREN,
 }
 
+# warning-ignore:shadowed_variable
 class Token:
 	var TYPE: int = 0 setget set_type, get_type
+	var line: int
 	var whitespace: String
 	func set_type(_newval: int):
 		# you fool! you can't set the type after initialization!
 		printerr("Attempted to change token type!")
 	
+	func get_length():
+		return whitespace.length()
+	
 	func get_type() -> int:
 		return TYPE
 		
-	func _init(type: int, _whitespace: String) -> void:
+	func _init(type: int, line: int, whitespace: String) -> void:
 		TYPE = type
-		whitespace = _whitespace
+		self.line = line
+		self.whitespace = whitespace
 		
 	func ws_to_string() -> String:
-#		return ""
-		var debug_str := "whitespace: \""
+		var debug_str := "line: " + String(line) + ", whitespace: \""
 		for c in whitespace:
 			if c == "\r":
 				debug_str += "\\r"
@@ -117,57 +126,60 @@ class Token:
 
 class WordToken extends Token:
 	var word: String
-	func _init(chars: String, ws: String).(TokenType.KEYWORD, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(TokenType.KEYWORD, line, ws) -> void:
 		word = chars
 		
+	func get_length():
+		return whitespace.length() + word.length()
+	
 	func _to_string() -> String:
 		return "WordToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class KeywordToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
-		
+	
 	func _to_string() -> String:
 		return "KeywordToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class KeywordValueToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "KeywordValueToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class EditorHintToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "EditorHintToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class TypeToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "TypeToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class ScopeToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "ScopeToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class InterpolationToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "InterpolationToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class ArgQualifierToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "ArgQualifierToken{\"" + word + "\", " + ws_to_string() + "}"
 
 class TypePrecisionToken extends WordToken:
-	func _init(chars: String, ws: String).(chars, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(chars, line, ws) -> void:
 		pass
 	func _to_string() -> String:
 		return "TypePrecisionToken{\"" + word + "\", " + ws_to_string() + "}"
@@ -175,9 +187,12 @@ class TypePrecisionToken extends WordToken:
 
 class IdentifierToken extends Token:
 	var word: String
-	func _init(chars: String, ws: String).(TokenType.IDENTIFIER, ws) -> void:
+	func _init(chars: String, line: int, ws: String).(TokenType.IDENTIFIER, line, ws) -> void:
 		word = chars
-		
+	
+	func get_length():
+		return whitespace.length() + word.length()
+	
 	func _to_string() -> String:
 		return "IdentifierToken{\"" + word + "\", " + ws_to_string() + "}"
 
@@ -185,40 +200,55 @@ class IdentifierToken extends Token:
 class NumberToken extends Token:
 	var number: String
 	var is_float: bool
-	func _init(chars: String, is_float_: bool, ws: String).(TokenType.WORD, ws) -> void:
+	func _init(chars: String, is_float_: bool, line: int, ws: String).(TokenType.WORD, line, ws) -> void:
 		number = chars
 		is_float = is_float_
-		
+	
+	func get_length():
+		return whitespace.length() + number.length()
+	
 	func _to_string() -> String:
 		return "NumberToken{is_float: " + String(is_float) + ", number: " + number + ", " + ws_to_string() + "}"
 
 class SemicolonToken extends Token:
-	func _init(ws: String).(TokenType.SEMICOLON, ws) -> void:
+	func _init(line: int, ws: String).(TokenType.SEMICOLON, line, ws) -> void:
 		pass
 	
+	func get_length():
+		return 1 + whitespace.length()
+		
 	func _to_string() -> String:
 		return "SemicolonToken{" + ws_to_string() + "}"
 
 class ColonToken extends Token:
-	func _init(ws: String).(TokenType.COLON, ws) -> void:
+	func _init(line: int, ws: String).(TokenType.COLON, line, ws) -> void:
 		pass
 	
+	func get_length():
+		return 1 + whitespace.length()
+		
 	func _to_string() -> String:
 		return "ColonToken{" + ws_to_string() + "}"
 
 class CommaToken extends Token:
-	func _init(ws: String).(TokenType.COMMA, ws) -> void:
+	func _init(line: int, ws: String).(TokenType.COMMA, line, ws) -> void:
 		pass
 	
+	func get_length():
+		return 1 + whitespace.length()
+		
 	func _to_string() -> String:
 		return "CommaToken{" + ws_to_string() + "}"
 
 class DelimToken extends Token:
 	var opening: bool
 	var delimiter: int
-	func _init(delimiter_: int, opening_: bool, ws: String).(TokenType.DELIM, ws) -> void:
+	func _init(delimiter_: int, opening_: bool, line: int, ws: String).(TokenType.DELIM, line, ws) -> void:
 		opening = opening_
 		delimiter = delimiter_
+	
+	func get_length():
+		return 1 + whitespace.length()
 	
 	func to_string_delim() -> String:
 		match delimiter:
@@ -236,7 +266,7 @@ class DelimToken extends Token:
 
 class OperatorToken extends Token:
 	var operator: int
-	func _init(op: int, ws: String).(TokenType.OPERATOR, ws) -> void:
+	func _init(op: int, line: int, ws: String).(TokenType.OPERATOR, line, ws) -> void:
 		operator = op
 	
 	func op_to_string() -> String:
@@ -264,15 +294,20 @@ class OperatorToken extends Token:
 			Operator.NEQL: return "!="
 			Operator.AND: return "&&"
 			Operator.OR: return "||"
+			
+			Operator.TERN: return "?"
 		printerr("Invalid operator!")
 		return ""
+	
+	func get_length():
+		return op_to_string().length() + whitespace.length()
 	
 	func _to_string() -> String:
 		return "OperatorToken{op: '" + op_to_string() + "', " + ws_to_string() + " }"
 # Whitespace Tokens should almost exclusively exist at the start of a file - all other
 # whitespace should be contained in the previous token
 class WhitespaceToken extends Token:
-	func _init(chars: String).(TokenType.WHITESPACE, chars) -> void:
+	func _init(line: int, chars: String).(TokenType.WHITESPACE, line, chars) -> void:
 		whitespace = chars
 	
 	func _to_string() -> String:

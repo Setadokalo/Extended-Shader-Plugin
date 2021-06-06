@@ -1,6 +1,9 @@
+# warning-ignore:shadowed_variable
 extends Object
 
 const GslTokens = preload("res://Tokens.gd")
+const Lib := preload("res://Libfuncs.gd")
+const Pair = Lib.Pair
 #TODO: add preprocessor constructs to tokenizer
 
 static func get_operator(source: String, index: int):
@@ -56,12 +59,17 @@ static func get_operator(source: String, index: int):
 				return GslTokens.Operator.BOR
 		"^":
 			return GslTokens.Operator.XOR
+		"?":
+			return GslTokens.Operator.TERN
 	return -1
 
-static func get_whitespace(source: String, start_idx: int) -> String:
+static func get_whitespace(source: String, start_idx: int) -> Pair:
 	var end_idx = start_idx
+	var lines_traversed := 0
 	var cont = true
 	while cont:
+		if end_idx >= source.length():
+			break
 		var c = source[end_idx]
 		if not is_whitespace(c):
 			if c == "/" and (source[end_idx + 1] == "/" or source[end_idx + 1] == "*"):
@@ -70,23 +78,30 @@ static func get_whitespace(source: String, start_idx: int) -> String:
 				if block:
 					end_idx += 1
 					while not (source[end_idx - 1] == "*" and source[end_idx] == "/"):
+						if source[end_idx] == "\n":
+							lines_traversed += 1
 						end_idx += 1
-					end_idx += 1
 				else:
 					while not source[end_idx] == "\n":
 						end_idx += 1
+					lines_traversed += 1
 			else:
 				cont = false
 				continue
+		if c == "\n":
+			lines_traversed += 1
 		end_idx += 1
 		if end_idx >= source.length():
 			break
-	return source.substr(start_idx, end_idx - start_idx)
+	return Pair.new(source.substr(start_idx, end_idx - start_idx), lines_traversed)
 
 static func is_whitespace(c: String) -> bool:
 	if c == "\r" or c == "\n" or c == "\t" or c == "\f" or c == "\v" or c == " ":
 		return true
 	return false
+
+static func is_comment(c: String) -> bool:
+	return c == "//" or c == "/*"
 
 var s0 = "0".ord_at(0)
 var s9 = "9".ord_at(0)
@@ -231,13 +246,15 @@ static func is_editor_hint(word: String) -> bool:
 
 func tokenize(shader_str: String) -> Array:
 	var c_idx := 0
+	var c_line := 0
 	var tokens := []
 	while c_idx < shader_str.length():
 		var c := shader_str[c_idx]
-		if is_whitespace(c):
+		if is_whitespace(c) or is_comment(shader_str.substr(c_idx, 2)):
 			var whitespace := get_whitespace(shader_str, c_idx)
-			c_idx += whitespace.length()
-			tokens.push_back(GslTokens.WhitespaceToken.new(whitespace))
+			c_idx += whitespace.one.length()
+			tokens.push_back(GslTokens.WhitespaceToken.new(c_line, whitespace.one))
+			c_line += whitespace.two
 		# elif the rest of the possible tokens
 		elif is_word_char(c):
 			var start_idx := c_idx
@@ -247,84 +264,96 @@ func tokenize(shader_str: String) -> Array:
 					break
 			var word := shader_str.substr(start_idx, c_idx - start_idx)
 			var whitespace = get_whitespace(shader_str, c_idx)
-			c_idx += whitespace.length()
+			c_idx += whitespace.one.length()
 			if is_keyword(word):
-				tokens.push_back(GslTokens.KeywordToken.new(word, whitespace))
+				tokens.push_back(GslTokens.KeywordToken.new(word, c_line, whitespace.one))
 			elif is_keyword_value(word):
-				tokens.push_back(GslTokens.KeywordValueToken.new(word, whitespace))
+				tokens.push_back(GslTokens.KeywordValueToken.new(word, c_line, whitespace.one))
 			elif is_type(word):
-				tokens.push_back(GslTokens.TypeToken.new(word, whitespace))
+				tokens.push_back(GslTokens.TypeToken.new(word, c_line, whitespace.one))
 			elif is_scope(word):
-				tokens.push_back(GslTokens.ScopeToken.new(word, whitespace))
+				tokens.push_back(GslTokens.ScopeToken.new(word, c_line, whitespace.one))
 			elif is_interpolation(word):
-				tokens.push_back(GslTokens.InterpolationToken.new(word, whitespace))
+				tokens.push_back(GslTokens.InterpolationToken.new(word, c_line, whitespace.one))
 			elif is_qualifier(word):
-				tokens.push_back(GslTokens.ArgQualifierToken.new(word, whitespace))
+				tokens.push_back(GslTokens.ArgQualifierToken.new(word, c_line, whitespace.one))
 			elif is_precision(word):
-				tokens.push_back(GslTokens.TypePrecisionToken.new(word, whitespace))
+				tokens.push_back(GslTokens.TypePrecisionToken.new(word, c_line, whitespace.one))
 			elif is_editor_hint(word):
-				tokens.push_back(GslTokens.EditorHintToken.new(word, whitespace))
+				tokens.push_back(GslTokens.EditorHintToken.new(word, c_line, whitespace.one))
 			else:
-				tokens.push_back(GslTokens.IdentifierToken.new(word, whitespace))
+				tokens.push_back(GslTokens.IdentifierToken.new(word, c_line, whitespace.one))
+			c_line += whitespace.two
 		elif c == ";":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.SemicolonToken.new(whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.SemicolonToken.new(c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == ":":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.ColonToken.new(whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.ColonToken.new(c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == ",":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.CommaToken.new(whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.CommaToken.new(c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == "(":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.PAREN, true, whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.PAREN, true, c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == ")":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.PAREN, false, whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.PAREN, false, c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == "{":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.CURLY, true, whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.CURLY, true, c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == "}":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.CURLY, false, whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.CURLY, false, c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == "[":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.SQUARE, true, whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.SQUARE, true, c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif c == "]":
 			c_idx += 1
 			var whitespace = get_whitespace(shader_str, c_idx)
-			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.SQUARE, false, whitespace))
-			c_idx += whitespace.length()
+			tokens.push_back(GslTokens.DelimToken.new(GslTokens.DelimiterType.SQUARE, false, c_line, whitespace.one))
+			c_line += whitespace.two
+			c_idx += whitespace.one.length()
 		elif is_number_start(c):
 			var num := get_number_at(shader_str, c_idx)
 			c_idx += num.length()
 			var whitespace = get_whitespace(shader_str, c_idx)
-			c_idx += whitespace.length()
+			c_idx += whitespace.one.length()
 			var is_float = num.find(".") > 0 or num.ends_with("f")
-			tokens.push_back(GslTokens.NumberToken.new(num, is_float, whitespace))
+			tokens.push_back(GslTokens.NumberToken.new(num, is_float, c_line, whitespace.one))
+			c_line += whitespace.two
 		else:
 			var op = get_operator(shader_str, c_idx)
 			if op != -1:
 				c_idx += GslTokens.get_op_length(op)
 				var whitespace = get_whitespace(shader_str, c_idx)
-				c_idx += whitespace.length()
-				tokens.push_back(GslTokens.OperatorToken.new(op, whitespace))
+				c_idx += whitespace.one.length()
+				tokens.push_back(GslTokens.OperatorToken.new(op, c_line, whitespace.one))
+				c_line += whitespace.two
 			else:
 				printerr("failed to tokenize character '" + c + "'")
 				return tokens

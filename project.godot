@@ -14,12 +14,17 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://AdvancedTextEdit.gd"
 }, {
+"base": "Reference",
+"class": "Fractions",
+"language": "GDScript",
+"path": "res://Fractions.gd"
+}, {
 "base": "EditorProperty",
 "class": "InspectorDefineEditor",
 "language": "GDScript",
 "path": "res://addons/sisilicon.shaders.extended-shader/inspector_plugin/InspectorDefineEditor.gd"
 }, {
-"base": "Object",
+"base": "Reference",
 "class": "LibFuncs",
 "language": "GDScript",
 "path": "res://Libfuncs.gd"
@@ -41,6 +46,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "AdvancedTextEdit": "",
+"Fractions": "",
 "InspectorDefineEditor": "",
 "LibFuncs": "",
 "ResourceLoaderExtShader": "",
@@ -51,7 +57,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Extended Shader"
-run/main_scene="res://Test.tscn"
+run/main_scene="res://MainMenu.tscn"
 config/icon="res://addons/sisilicon.shaders.extended-shader/icon_extended_shader.svg"
 
 [display]
@@ -60,7 +66,7 @@ window/energy_saving/keep_screen_on=false
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/sisilicon.shaders.extended-shader/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/sisilicon.shaders.extended-shader/plugin.cfg", "res://addons/zylann.editor_debugger/plugin.cfg" )
 
 [physics]
 

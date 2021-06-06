@@ -1,11 +1,14 @@
 shader_type canvas_item;
 
 
-vec3 pos = vec3(1.0);
+varying flat vec3 pos;
 
 
 void fragment() {
-	vec3 canvas_item = vec3(1.0);
+	
+	vec3 a = vec3(0.1);
+	
+	vec3 canvas_item = a;
 	COLOR.rgb = vec3(0.0f);
 	while (false) {
 		break;

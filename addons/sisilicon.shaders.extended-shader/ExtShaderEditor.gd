@@ -453,7 +453,7 @@ func _on_Menu_item_pressed(ID : int) -> void:
 			else:
 				var text = text_edit.get_line(text_edit.cursor_get_line())
 				if text.begins_with("//"):
-					text_edit.set_line(text_edit.cursor_get_line(), text.substr(1))
+					text_edit.set_line(text_edit.cursor_get_line(), text.substr(2))
 				else:
 					text_edit.set_line(text_edit.cursor_get_line(), "//" + text)
 #		CLONE_DOWN: pass
@@ -542,7 +542,7 @@ func _on_PollForErrors_timeout():
 
 var error_line: int = -1
 
-func _on_Shader_error(line: int, error_msg: String, custom_color := Color(1, 0.470588, 0.419608)):
+func _on_Shader_error(line: int, error_msg: String, custom_color := Color(1, 0.470588, 0.419608), prefix = "error"):
 	
 	self.error_msg = error_msg
 	if error_line != -1 and raw_view:
@@ -555,11 +555,11 @@ func _on_Shader_error(line: int, error_msg: String, custom_color := Color(1, 0.4
 		else:
 			text_edit.clear_error()
 		error_line = line - 1
-		$InfoBar/ErrorBar.text = "error(%d): %s" % [line, error_msg]
+		$InfoBar/ErrorBar.text = "%s(%d): %s" % [prefix, line, error_msg]
 	else:
 		text_edit.clear_error()
 		error_line = -1
-		$InfoBar/ErrorBar.text = "error: %s" % error_msg
+		$InfoBar/ErrorBar.text = "%s: %s" % [prefix, error_msg]
 
 func _on_RawView_toggled(button_pressed):
 	raw_view = button_pressed
@@ -581,7 +581,7 @@ func _on_RawView_toggled(button_pressed):
 func _on_PrintFuncTable_pressed() -> void:
 	if shader:
 		print(shader.functions)
-		_on_Shader_error(-1, "Function Table Printed to Output", Color(1.0, 1.0, 1.0))
+		_on_Shader_error(-1, "Function Table Printed to Output", Color(0.8, 0.8, 0.8), "debug")
 	else:
 		_on_Shader_error(-1, "No Shader loaded in editor!")
 

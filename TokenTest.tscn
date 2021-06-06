@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://TokenizerDemo.gd" type="Script" id=1]
 [ext_resource path="res://BenchProgress.gd" type="Script" id=2]
@@ -63,6 +63,27 @@ ToolButton/styles/hover = null
 ToolButton/styles/normal = null
 ToolButton/styles/pressed = null
 
+[sub_resource type="StyleBoxEmpty" id=6]
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="StyleBoxEmpty" id=8]
+
+[sub_resource type="StyleBoxEmpty" id=9]
+
+[sub_resource type="StyleBoxEmpty" id=10]
+
+[sub_resource type="DynamicFontData" id=11]
+font_path = "res://addons/sisilicon.shaders.extended-shader/Hack_Regular.ttf"
+
+[sub_resource type="DynamicFont" id=12]
+size = 14
+use_mipmaps = true
+use_filter = true
+extra_spacing_top = -1
+extra_spacing_bottom = -1
+font_data = SubResource( 11 )
+
 [node name="PanelContainer" type="PanelContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -103,7 +124,7 @@ suffix = "iteration(s)"
 
 [node name="BenchProgress" type="ProgressBar" parent="VBoxContainer/Tools"]
 margin_left = 240.0
-margin_right = 1010.0
+margin_right = 756.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -128,18 +149,45 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="TextEdit" type="TextEdit" parent="VBoxContainer"]
+[node name="CheckButton" type="CheckButton" parent="VBoxContainer/Tools"]
+margin_left = 760.0
+margin_right = 903.0
+margin_bottom = 32.0
+custom_styles/hover = SubResource( 6 )
+custom_styles/pressed = SubResource( 7 )
+custom_styles/normal = SubResource( 8 )
+pressed = true
+text = "View Parsed"
+
+[node name="ChangeShaderButton" type="Button" parent="VBoxContainer/Tools"]
+margin_left = 907.0
+margin_right = 1010.0
+margin_bottom = 32.0
+text = "Change Shader"
+
+[node name="Control" type="Panel" parent="VBoxContainer"]
 margin_top = 36.0
 margin_right = 1010.0
 margin_bottom = 586.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+custom_styles/panel = SubResource( 9 )
+
+[node name="TextEdit" type="TextEdit" parent="VBoxContainer/Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/read_only = SubResource( 10 )
+custom_fonts/font = SubResource( 12 )
+custom_colors/font_color_readonly = Color( 0, 0, 0, 1 )
 text = "Some
 Wordy
 Text
 Yadadadada
 Yadayadayada
 Et cetera"
+readonly = true
 syntax_highlighting = true
 show_line_numbers = true
 breakpoint_gutter = true
@@ -164,9 +212,9 @@ colon_token_color = Color( 0.827451, 0.141176, 0.639216, 1 )
 comma_token_color = Color( 0.866667, 0.596078, 0.831373, 1 )
 whitespace_token_color = Color( 0.662745, 0.607843, 0.533333, 1 )
 delim_token_color = Color( 1, 0.294118, 0.921569, 1 )
-op_token_color = Color( 0.541176, 0.227451, 1, 1 )
+op_token_color = Color( 0.658824, 0.423529, 1, 1 )
 
-[node name="Results" type="AcceptDialog" parent="VBoxContainer/TextEdit"]
+[node name="Results" type="AcceptDialog" parent="VBoxContainer/Control/TextEdit"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -182,20 +230,89 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ColorRect" type="ColorRect" parent="VBoxContainer/TextEdit"]
-anchor_top = 0.5
+[node name="TextEdit2" type="TextEdit" parent="VBoxContainer/Control"]
 anchor_right = 1.0
-anchor_bottom = 0.5
-margin_top = -200.0
-margin_bottom = -184.0
-grow_vertical = 2
-color = Color( 1, 0.380392, 0.380392, 0.368627 )
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_styles/read_only = SubResource( 10 )
+custom_fonts/font = SubResource( 12 )
+custom_colors/font_color_readonly = Color( 0, 0, 0, 1 )
+text = "Some
+Wordy
+Text
+Yadadadada
+Yadayadayada
+Et cetera"
+readonly = true
+syntax_highlighting = true
+show_line_numbers = true
+breakpoint_gutter = true
+smooth_scrolling = true
+v_scroll_speed = 150.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[connection signal="pressed" from="VBoxContainer/Tools/Benchmark" to="VBoxContainer/TextEdit" method="_on_Benchmark_pressed"]
-[connection signal="value_changed" from="VBoxContainer/Tools/BenchCount" to="VBoxContainer/TextEdit" method="_on_BenchCount_value_changed"]
+[node name="Results" type="AcceptDialog" parent="VBoxContainer/Control/TextEdit2"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -197.0
+margin_top = -37.0
+margin_right = 197.0
+margin_bottom = 37.0
+window_title = "Benchmark Results"
+dialog_text = "Took 0.000000 Seconds on average
+(+/- 0.00000s min/max)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NSPHolder" type="Control" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 1017.0
+margin_bottom = 593.0
+mouse_filter = 2
+
+[node name="NewShaderPopup" type="AcceptDialog" parent="NSPHolder"]
+visible = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -290.0
+margin_top = -165.5
+margin_right = 290.0
+margin_bottom = 165.5
+popup_exclusive = true
+window_title = "New Shader"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TextEdit" type="TextEdit" parent="NSPHolder/NewShaderPopup"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = -32.0
+show_line_numbers = true
+draw_tabs = true
+smooth_scrolling = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="VBoxContainer/Tools/Benchmark" to="VBoxContainer/Control/TextEdit" method="_on_Benchmark_pressed"]
+[connection signal="value_changed" from="VBoxContainer/Tools/BenchCount" to="VBoxContainer/Control/TextEdit" method="_on_BenchCount_value_changed"]
 [connection signal="changed" from="VBoxContainer/Tools/BenchProgress" to="VBoxContainer/Tools/BenchProgress" method="_on_BenchProgress_changed"]
 [connection signal="value_changed" from="VBoxContainer/Tools/BenchProgress" to="VBoxContainer/Tools/BenchProgress" method="_on_BenchProgress_value_changed"]
-[connection signal="confirmed" from="VBoxContainer/TextEdit/Results" to="VBoxContainer/TextEdit" method="_on_Results_confirmed"]
+[connection signal="toggled" from="VBoxContainer/Tools/CheckButton" to="VBoxContainer/Control/TextEdit" method="_on_ParsedButton_toggled"]
+[connection signal="pressed" from="VBoxContainer/Tools/ChangeShaderButton" to="VBoxContainer/Control/TextEdit" method="_on_ChangeShaderButton_pressed"]
+[connection signal="confirmed" from="VBoxContainer/Control/TextEdit/Results" to="VBoxContainer/Control/TextEdit" method="_on_Results_confirmed"]
+[connection signal="confirmed" from="VBoxContainer/Control/TextEdit2/Results" to="VBoxContainer/Control/TextEdit2" method="_on_Results_confirmed"]
+[connection signal="confirmed" from="NSPHolder/NewShaderPopup" to="VBoxContainer/Control/TextEdit" method="_on_NewShaderPopup_confirmed"]

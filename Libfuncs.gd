@@ -1,4 +1,3 @@
-extends Object
 class_name LibFuncs
 
 class Pair:
@@ -22,3 +21,6 @@ static func create_reg_exp(string : String) -> RegEx:
 # Godot... why the fuck are you like this
 static func log_b(val: float, base: float = 2) -> float:
 	return log(val) / log(base)
+
+static func gcd(a: int, b: int) -> int:
+	return a if b == 0 else gcd(b, a % b)

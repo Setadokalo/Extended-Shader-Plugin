@@ -34,6 +34,8 @@ func _init() -> void:
 	popup_text_holder.anchor_bottom = 1
 	popup_text_holder.margin_right = 0
 	popup_text_holder.margin_bottom = 0
+#	popup_text_holder.mouse_filter = MOUSE_FILTER_IGNORE
+	popup_text_holder.focus_mode = FOCUS_NONE
 	
 	line_highlight.anchor_right = 1
 	line_highlight.margin_right = 0
